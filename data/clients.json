@@ -1,0 +1,16 @@
+[
+ {
+  "id": "cl1",
+  "name": "Rahul",
+  "phone": "+91 98765 43210",
+  "email": "rahul@example.com",
+  "notes": "Wedding — Dec 2025. Loves cinematic teasers."
+ },
+ {
+  "id": "cl2",
+  "name": "Meera",
+  "phone": "+91 99876 54321",
+  "email": "meera@example.com",
+  "notes": "Pre-wedding at hills. Album pending selection."
+ }
+]

@@ -1,0 +1,26 @@
+[
+ {
+  "id": "r1",
+  "name": "Aman Khan",
+  "rating": 5,
+  "date": "2024-09-18",
+  "source": "Google · via JustDial",
+  "text": "Best service in the area.",
+  "published": true,
+  "event": "",
+  "image": "",
+  "order": 10
+ },
+ {
+  "id": "r2",
+  "name": "JustDial Community",
+  "rating": 5,
+  "date": "2025-01-01",
+  "source": "JustDial listing",
+  "text": "Rated 5.0 across 25 ratings for service, punctuality and quality.",
+  "published": true,
+  "event": "",
+  "image": "",
+  "order": 20
+ }
+]

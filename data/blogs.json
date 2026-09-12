@@ -1,0 +1,58 @@
+[
+ {
+  "id": "b1",
+  "slug": "choose-your-wedding-photographer",
+  "title": "How to Choose the Right Wedding Photographer (Without Regret)",
+  "category": "Weddings",
+  "author": "Markipie Studio",
+  "date": "2026-07-18",
+  "status": "published",
+  "cover": "/images/w1.jpg",
+  "seoTitle": "How to Choose a Wedding Photographer | Markipie",
+  "seoDesc": "A practical, honest guide to choosing a wedding photographer — portfolios, contracts, delivery and the questions that matter.",
+  "content": "<p>Your photographer is the one vendor whose work you keep forever. Cakes are eaten, flowers fade — but the frames remain. Here is how to choose well.</p><h2>Look at full weddings, not highlights</h2><p>Any studio can show ten beautiful frames. Ask to see two or three complete wedding stories. You are hiring someone for eight to twelve hours of unpredictable light, emotion and chaos — consistency matters more than a single viral shot.</p><h2>Ask how you receive your photos</h2><p>Modern delivery should be private, fast and intelligent. At Markipie every event gets a private gallery with AI face recognition, so a guest can scan their face and instantly find themselves among two thousand photographs — no USB sticks lost in drawers, no public Drive links.</p><h2>Understand the film, not just the photos</h2><p>A cinematic film and a catchy teaser are now part of the memory. Watch the studio’s films: do they make you feel something, or just show something?</p><h2>Albums are heirlooms</h2><p>Check album quality — paper, leather, lay-flat binding. An album you can hold beats a folder on a phone. And make sure the studio offers an album selection tool so you choose the photographs that matter to you.</p><p>Choose the team whose work, process and people you trust. Then stay present on your day — that is what you are really paying for.</p>",
+  "order": 10
+ },
+ {
+  "id": "b2",
+  "slug": "cinematic-wedding-films-guide",
+  "title": "What Makes a Wedding Film Truly Cinematic?",
+  "category": "Films",
+  "author": "Markipie Films",
+  "date": "2026-06-30",
+  "status": "published",
+  "cover": "/images/pw1.jpg",
+  "seoTitle": "Cinematic Wedding Films Explained | Markipie",
+  "seoDesc": "Sound design, colour grading, story structure — what separates a cinematic wedding film from a simple video.",
+  "content": "<p>“Cinematic” is the most overused word in wedding videography. Here is what it should actually mean.</p><h2>Story before spectacle</h2><p>A cinematic film has a beginning, a middle and an end. It opens with anticipation — the quiet before the day — and builds through emotion to celebration. Drone shots are seasoning, not the meal.</p><h2>Sound is half the film</h2><p>The vows, the laughter, the shaky toast speech. Real audio, cleanly recorded, is what makes you cry five years later. Music carries the film; your voices anchor it.</p><h2>Colour grading sets the mood</h2><p>Grading is the film’s temperature — warm skin, deep shadows, honest tones. A good grade is invisible; you simply feel the day again.</p><h2>The teaser earns the share</h2><p>A 60–90 second teaser, cut to music and delivered within days, is how your story meets the world. Trendy vertical reels extend it to Instagram, where memories now live.</p><p>Ask any studio — including us — to show a full film, not just a montage. Cinema reveals itself in the long form.</p>",
+  "order": 20
+ },
+ {
+  "id": "b3",
+  "slug": "ai-face-recognition-photo-delivery",
+  "title": "AI Face Recognition: Find Yourself in 2,000 Wedding Photos",
+  "category": "Technology",
+  "author": "Markipie Studio",
+  "date": "2026-06-02",
+  "status": "published",
+  "cover": "/images/br2.jpg",
+  "seoTitle": "AI Face Recognition Photo Delivery | Markipie",
+  "seoDesc": "How Markipie’s private client galleries use live face scanning to match your photos from thousands — privately and instantly.",
+  "content": "<p>After a big wedding, the photographer delivers thousands of photographs. Wonderful — and overwhelming. Every guest wants the same thing: “my” photos.</p><h2>The old way is broken</h2><p>Public gallery links, shared Drive folders, endless scrolling at midnight. It works, but it is neither private nor personal.</p><h2>The Markipie way</h2><p>Each event gets a private gallery with a unique access link and QR code. Inside, guests can tap “Scan Your Face” — using their live camera, never an upload — and our face-recognition engine matches them across the entire event. “487 photos found” — and there you are, every frame of you.</p><h2>Private by design</h2><p>Face scans happen on your device; your gallery is protected by an access code and your phone number; downloads respect the permissions your photographer sets. Google Drive stays behind the scenes as storage — you only ever see the Markipie gallery.</p><p>Technology should feel like magic in service of memory. That is the standard we build to.</p>",
+  "order": 30
+ },
+ {
+  "id": "b4",
+  "slug": "premium-wedding-album-guide",
+  "title": "The Premium Album Guide: Leather, Lay-Flat and Lasting",
+  "category": "Albums",
+  "author": "Markipie Design",
+  "date": "2026-05-12",
+  "status": "published",
+  "cover": "/images/al1.jpg",
+  "seoTitle": "Premium Wedding Album Guide | Markipie",
+  "seoDesc": "Paper, finishes, layouts and personalisation — how to design a wedding album worth keeping for generations.",
+  "content": "<p>Phones upgrade every year. Albums outlive us. Here is how to build one properly.</p><h2>Start with the story</h2><p>A great album is edited, not dumped. Forty to sixty spreads that breathe — one hero image per spread, details as rhythm. Our album selection tool puts the choosing in your hands.</p><h2>Paper and binding</h2><p>Look for lay-flat binding and thick, lustre or silk paper. It keeps spreads flat through decades of thumbs and lies beautifully open on a table.</p><h2>Covers that age well</h2><p>Leather deepens; acrylic dazzles; silk whispers. Choose the material that sounds like your wedding felt. Personalise with foil-stamped names and the date.</p><h2>Order the parent copies</h2><p>The people who cried the most deserve more than a WhatsApp forward. Matching parent albums in a slipcase are the kindest upgrade in wedding photography.</p><p>An album is the only deliverable your grandchildren will hold. Build it like one.</p>",
+  "order": 40
+ }
+]
