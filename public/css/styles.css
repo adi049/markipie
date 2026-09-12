@@ -861,3 +861,272 @@ body.admin-page .ad-side { top: 0; }
 .imgup-s{font-size:12px;color:var(--ink2)}
 .imgup-s.ok{color:#4a7a3f}
 .imgup-s.bad{color:#b4453c}
+
+/* ================= MARKIPIE — FINAL MOBILE POLISH =================
+   Mobile-first overrides for 320–640px screens.
+   Keeps the desktop/editorial design intact while improving hierarchy,
+   spacing, touch targets, media sizing and section flow on phones. */
+@media (max-width: 640px) {
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+  body { font-size: 15px; line-height: 1.65; }
+
+  .wrap, .wrap.wide { width: 100%; max-width: 100%; padding-left: 18px; padding-right: 18px; }
+  .sec { padding: 72px 0; }
+  .phead { padding: 126px 0 42px; }
+
+  /* Type hierarchy */
+  .kicker { font-size: 9px; letter-spacing: .28em; margin-bottom: 16px; }
+  .h1 { font-size: clamp(40px, 12vw, 56px); line-height: 1.02; }
+  .h2, .h2.xl { font-size: clamp(34px, 10.5vw, 48px); line-height: 1.04; }
+  .lead { font-size: 16px; line-height: 1.65; }
+
+  /* Header */
+  .nav-in { padding: 14px 18px; min-height: 64px; gap: 12px; }
+  .brand { min-width: 0; }
+  .brand .lg-name { font-size: 16px; letter-spacing: .22em; text-indent: .22em; }
+  .burger { width: 42px; height: 38px; flex: 0 0 42px; }
+  .m-menu { padding: 78px 22px 34px; overflow-y: auto; }
+  .m-nav { width: 100%; max-height: 100%; gap: 1px; }
+  .m-link { font-size: clamp(28px, 8vw, 34px); line-height: 1.35; }
+  .m-more { gap: 12px 18px; margin-top: 22px; }
+  .m-more a { font-size: 9.5px; letter-spacing: .18em; }
+
+  /* Hero */
+  .hero { min-height: 100svh; min-height: 100dvh; align-items: flex-end; }
+  .hero-bg { inset: 0; }
+  .hero-in { padding: 0 18px 72px; }
+  .hero-h1 { font-size: clamp(42px, 12vw, 58px); line-height: 1.02; max-width: 100%; }
+  .hero-sub { max-width: 34rem; margin: 20px 0 28px; font-size: 15px; line-height: 1.65; }
+  .hero-cta { gap: 10px; width: 100%; }
+  .hero-cta .btn { flex: 1 1 145px; min-height: 50px; padding: 15px 16px; font-size: 9.5px; letter-spacing: .16em; }
+
+  /* Shared buttons / controls */
+  .btn { min-height: 48px; padding: 14px 20px; letter-spacing: .18em; }
+  .btn.big { padding: 16px 20px; font-size: 10.5px; }
+  .chip { padding: 10px 14px; font-size: 9.5px; letter-spacing: .1em; }
+
+  /* Studio / Why */
+  .sig-wrap, .why2-wrap, .ai-wrap, .al2-wrap, .about-grid,
+  .form-wrap, .contact-grid, .col-wrap { gap: 38px; }
+  .sig-imgs { height: 350px; margin-top: 4px; }
+  .sig-a { right: 0; width: 84%; }
+  .sig-b { width: 58%; border-width: 7px; }
+  .sig-tag { margin-top: 24px; font-size: 18px; }
+  .why2-list li { gap: 15px; padding: 20px 0; align-items: flex-start; }
+  .why2-list li:hover { padding-left: 0; }
+  .why2-list h3 { font-size: 23px; }
+  .why2-list p { font-size: 13.5px; line-height: 1.6; }
+  .why2-fig { margin-top: 30px; }
+
+  /* Story grid / films */
+  .st-head { display: block; margin-bottom: 30px; }
+  .st-head .link-arrow { margin-top: 16px; }
+  .st-grid { gap: 10px; }
+  .st-a, .st-b, .st-c, .st-d, .st-e { grid-column: 1 / 13; aspect-ratio: 16 / 10; }
+  .st-ov { padding: 34px 16px 16px; }
+  .st-ov h3 { font-size: 27px; }
+  .st-ov span { font-size: 9px; letter-spacing: .22em; }
+  .st-play { width: 58px; height: 58px; }
+  .st-more { margin-top: 34px; }
+  .film-hero video { aspect-ratio: 16 / 10; }
+  .film-tags { bottom: 14px; padding: 0 14px; gap: 7px 10px; flex-wrap: wrap; font-size: 8.5px; letter-spacing: .18em; }
+
+  /* AI section */
+  .ai-visual img { aspect-ratio: 4 / 4.8; }
+  .ai-chip { left: 12px; bottom: 12px; padding: 10px 12px; font-size: 9px; letter-spacing: .14em; }
+  .ai-frame { inset: 9%; }
+
+  /* Packages / tiers */
+  .pkg-grid { grid-template-columns: 1fr; gap: 18px; }
+  .pkg-body { padding: 25px 21px 28px; }
+  .pkg-body h2 { font-size: 30px; }
+  .pkg-price strong { font-size: 36px; }
+  .pkg-feat li { font-size: 13.5px; }
+  .pkg2-row { grid-template-columns: 1fr; gap: 0; }
+  .pkg2 { padding: 25px 0; }
+  .pkg2 h3 { font-size: 25px; }
+  .pkg2 .link-arrow { opacity: 1; transform: none; }
+  .tier-grid { grid-template-columns: 1fr; gap: 16px; }
+  .tier { padding: 27px 21px; }
+  .tier-badge { left: 21px; }
+  .tier-price strong { font-size: 34px; }
+  .tier-compare { margin-top: 44px; }
+  .tier-compare table { min-width: 620px; }
+  .custom-band { margin-top: 34px; padding: 32px 22px; gap: 20px; }
+  .custom-band h2 { font-size: 34px; }
+
+  /* Albums */
+  .alb-show { gap: 56px; }
+  .show-row, .show-row.rev { grid-template-columns: 1fr; gap: 28px; }
+  .show-row.rev .show-img { order: 0; }
+  .show-copy h2 { font-size: 34px; }
+  .finish-strip { grid-template-columns: 1fr; gap: 24px; padding: 28px 22px; }
+
+  /* Portfolio / services */
+  .pf-wrap, .sv-wrap { gap: 52px; }
+  .pf-row, .pf-row.rev, .sv-row, .sv-row.rev { grid-template-columns: 1fr; gap: 24px; }
+  .pf-row.rev .pf-img, .sv-row.rev .sv-img { order: 0; }
+  .pf-copy h2 { font-size: 34px; }
+  .sv-copy, .sv-row.rev .sv-copy { padding: 26px 22px 30px; }
+  .sv-copy h2 { font-size: 30px; }
+  .sv-img img { min-height: 0; aspect-ratio: 4 / 3; height: auto; }
+
+  /* Gallery */
+  .filters { gap: 7px; margin-bottom: 28px; }
+  .masonry { columns: 2 1fr; column-gap: 8px; }
+  .m-item { margin-bottom: 8px; border-radius: 7px; }
+  .m-item figcaption { display: none; }
+  .m-play { width: 44px; height: 44px; font-size: 13px; }
+  .c-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .c-item { border-radius: 7px; }
+
+  /* Lightboxes / modals */
+  .lb-stage { inset: 58px 8px 92px; }
+  .lb-prev, .lb-next { width: 42px; height: 42px; font-size: 19px; }
+  .lb-prev { left: 7px; }
+  .lb-next { right: 7px; }
+  .lb-x { top: 12px; right: 12px; width: 42px; height: 42px; }
+  .lb-bar { padding: 10px 8px 16px; gap: 7px; flex-wrap: wrap; }
+  .lb-bar button { padding: 9px 12px; font-size: 11.5px; }
+  .modal { padding: 12px; }
+  .modal-card { padding: 28px 18px; border-radius: 9px; }
+  .modal-card h3 { font-size: 29px; }
+  .face-stage { aspect-ratio: 3 / 4; }
+
+  /* Blogs / posts */
+  .blog-grid, .blog-grid.small { grid-template-columns: 1fr; gap: 16px; }
+  .blog-card.lead-card { grid-template-columns: 1fr; }
+  .blog-body { padding: 22px 20px 24px; }
+  .blog-body h2 { font-size: 25px; }
+  .post h1 { font-size: clamp(36px, 11vw, 52px); }
+  .post-body p { font-size: 16px; }
+  .post-body h2 { font-size: 28px; }
+  .post-cta { padding: 26px 21px; }
+  .post-cta h3 { font-size: 27px; }
+
+  /* Booking / contact forms */
+  .pform { padding: 25px 18px; gap: 14px; }
+  .frow { grid-template-columns: 1fr; gap: 14px; }
+  .pform input, .pform select, .pform textarea,
+  .gate-card input, .modal-card input { font-size: 16px; padding: 13px 14px; }
+  .form-side { padding: 28px 22px; }
+  .form-side h3 { font-size: 28px; }
+  .contact-cards { gap: 10px; }
+  .c-card { padding: 20px 18px; }
+
+  /* Client access */
+  .gate-sec, .cstep { padding: 34px 0 72px; }
+  .gate-card { width: 100%; padding: 30px 18px; }
+  .gate-card h2 { font-size: 29px; }
+  .c-head { padding-top: 106px; align-items: flex-start; }
+  .c-head h1 { font-size: clamp(34px, 10vw, 48px); }
+  .c-tools { margin: 25px 0 20px; align-items: stretch; }
+  .c-tabs, .c-acts { width: 100%; }
+  .c-tabs .tbtn, .c-acts .tbtn { flex: 1 1 auto; }
+  .c-stats { gap: 10px 15px; }
+
+  /* Collage */
+  .col-wrap { grid-template-columns: 1fr; gap: 24px; }
+  .col-side { padding: 22px 18px; }
+  .col-stage { position: static; width: 100%; }
+  #ccanvas { max-width: 100%; border-radius: 8px; }
+  .tpl-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .tpl { padding: 8px 5px 7px; }
+  .sw-row { flex-wrap: wrap; }
+
+  /* Footer */
+  .foot-in { grid-template-columns: 1fr; padding: 58px 18px 30px; gap: 30px; }
+  .foot-col a { padding: 6px 0; }
+  .foot-base { padding: 18px 18px 24px; text-align: center; }
+  .admin-lock { position: static; margin-left: 4px; }
+
+  /* Floating actions: compact, safe-area friendly */
+  .floats { right: max(12px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); gap: 9px; }
+  .float-btn { width: 46px; height: 46px; }
+  .float-btn svg { width: 20px; height: 20px; }
+
+  /* Avoid desktop hover transforms feeling broken on touch devices */
+  .pkg-card:hover, .pkg2:hover, .blog-card:hover, .pf-img:hover img,
+  .m-item:hover img, .sg-item:hover img, .pfd-item:hover img,
+  .float-btn:hover, .btn:hover { transform: none; }
+}
+
+@media (max-width: 380px) {
+  .wrap, .wrap.wide { padding-left: 15px; padding-right: 15px; }
+  .nav-in { padding-left: 15px; padding-right: 15px; }
+  .hero-in { padding-left: 15px; padding-right: 15px; padding-bottom: 62px; }
+  .hero-h1 { font-size: 40px; }
+  .hero-sub { font-size: 14px; }
+  .hero-cta .btn { flex-basis: 100%; }
+  .masonry { columns: 2 1fr; }
+  .m-link { font-size: 27px; }
+}
+
+/* ================= MARKIPIE — MOBILE NAV FIX ================= */
+@media (max-width: 1080px) {
+  .nav { z-index: 1000; }
+  /* Mobile menu must escape the navbar's backdrop-filter containing block. */
+  .nav.open, .nav.open.scrolled {
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .nav-in { position: relative; z-index: 1002; }
+  .burger { display: block !important; position: relative; z-index: 1003; cursor: pointer; }
+  .nav .brand { position: relative; z-index: 1003; }
+  .m-menu {
+    z-index: 1001;
+    display: flex !important;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(13,16,19,.985);
+    transition: opacity .25s ease, visibility .25s ease;
+    padding: 88px 22px 34px;
+  }
+  .nav.open .m-menu {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .m-nav {
+    position: relative;
+    z-index: 1004;
+    width: min(100%, 520px);
+    max-height: calc(100dvh - 110px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 12px 0 24px;
+  }
+  .m-link {
+    display: block;
+    padding: 5px 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+  .nav.open .m-link {
+    visibility: visible;
+  }
+  .m-more { padding-bottom: 10px; }
+}
+
+@media (max-width: 520px) {
+  .nav-in { min-height: 62px; padding: 12px 16px; }
+  .brand .lg-type { display: flex !important; }
+  .brand .lg-name { font-size: 16px; letter-spacing: .18em; text-indent: .18em; }
+  .brand .lg-desc { display: none; }
+  .brand .lg-full { gap: 7px; }
+  .brand .lg svg { width: 25px; height: 25px; }
+  .burger { width: 44px; height: 40px; flex-basis: 44px; }
+  .burger span { left: 7px; right: 7px; height: 2px; }
+  .burger span:nth-child(1) { top: 11px; }
+  .burger span:nth-child(2) { top: 19px; }
+  .burger span:nth-child(3) { top: 27px; }
+  .nav.open .burger span:nth-child(1),
+  .nav.open .burger span:nth-child(3) { top: 19px; }
+  .m-menu { padding: 78px 18px 24px; }
+  .m-link { font-size: clamp(28px, 8.5vw, 36px); line-height: 1.28; padding: 3px 0; }
+  .m-more { margin-top: 18px; gap: 10px 16px; }
+  .m-more a { font-size: 9px; }
+}

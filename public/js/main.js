@@ -36,6 +36,7 @@
 
   /* ---------- scroll: progress, nav state, parallax ---------- */
   var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MOBILE = window.matchMedia && matchMedia('(max-width: 640px)').matches;
   var prog = document.getElementById('progress');
   var pxEls = Array.prototype.slice.call(document.querySelectorAll('[data-px]')).map(function (el) {
     return { el: el, target: el.tagName === 'IMG' ? el : (el.querySelector('img') || el), sp: parseFloat(el.getAttribute('data-px')) || 0.1 };
@@ -48,7 +49,7 @@
       var vh = innerHeight;
       if (prog) prog.style.transform = 'scaleX(' + Math.min(1, y / Math.max(1, document.documentElement.scrollHeight - vh)) + ')';
       if (nav) nav.classList.toggle('scrolled', y > 30);
-      if (!RM) for (var i = 0; i < pxEls.length; i++) {
+      if (!RM && !MOBILE) for (var i = 0; i < pxEls.length; i++) {
         var p = pxEls[i];
         var r = p.el.getBoundingClientRect();
         if (r.bottom < -200 || r.top > vh + 200) continue;

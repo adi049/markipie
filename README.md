@@ -287,4 +287,3 @@ in the supplied name is neutralised.
 CMS record still references it** and names what is using it.
 
 `/blog` and `/blog/<slug>` 301-redirect to the canonical `/blogs` URLs.
-"# markipie" 
