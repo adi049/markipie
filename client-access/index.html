@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Client Access — Markipie</title>
+<meta name="description" content="Enter your unique client code to access your private gallery — or use AI Scan.">
+<meta name="theme-color" content="#ffffff">
+<!-- social share (Phase 14) — domain-dependent tags (og:url/og:image) are added at deploy time -->
+<meta property="og:title" content="Client Access — Markipie">
+<meta property="og:description" content="Enter your unique client code to access your private gallery — or use AI Scan.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B2530'/%3E%3Cpath d='M18 40l10-14 8 8 10-12' stroke='%2300D8D4' stroke-width='5.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body class="page-client-access">
+<a class="skip-link" href="#site">Skip to content</a>
+
+<header id="siteHeader" class="site-header"></header>
+<div id="mobileDrawer" class="drawer" hidden></div>
+
+<main id="site" class="site-main">
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow eyebrow--green">Private</span>
+      <h1 class="h1">Client Access</h1>
+      <p class="lead">Enter your unique client code to access your private gallery.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="container">
+
+      <!-- two premium entry methods -->
+      <div class="access-options">
+        <a class="access-option access-option--scan reveal" href="/find-your-photos/">
+          <span class="icon-chip icon-chip--scan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg>
+          </span>
+          <h2>Find Your Photos</h2>
+          <p>Scan your face to find your photos.</p>
+          <span class="btn btn--tech" style="align-self:flex-start">Find Your Photos</span>
+        </a>
+        <a class="access-option reveal reveal-d1" href="#code-form">
+          <span class="icon-chip icon-chip--code">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          </span>
+          <h2>Enter Client Code</h2>
+          <p>Received an access code with your album or over WhatsApp? Enter it below to open your private event collection.</p>
+          <span class="link-arrow">Go to code entry <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>
+        </a>
+      </div>
+
+      <!-- client code form -->
+      <div id="code-form" style="margin-top:44px; scroll-margin-top:calc(var(--header-h) + 24px)">
+        <form class="access-form reveal" id="accessForm" novalidate>
+          <h2 style="font-size:19px">Access your gallery</h2>
+          <p style="font-size:13.5px;color:var(--ink-3);margin:6px 0 20px">Your code was shared with you at delivery.</p>
+          <div class="form-error" id="accessError" role="alert">Invalid or inactive client code.</div>
+          <div class="field">
+            <label for="clientCode">Enter Client Code</label>
+            <input class="code-input" id="clientCode" name="code" inputmode="text" autocomplete="off"
+                   spellcheck="false" maxlength="24" placeholder="••••••" required>
+          </div>
+          <button class="btn btn--primary btn--block" type="submit" id="accessBtn">Access Gallery</button>
+          <p class="access-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Private &amp; secure — only your own gallery opens with your code.
+          </p>
+        </form>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer id="siteFooter" class="site-footer"></footer>
+<div id="fabs" class="fabs"></div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/assets/js/site.js"></script>
+<script src="/assets/js/env.js"></script>
+<script src="/assets/js/lib/supabase.js"></script>
+<script src="/assets/js/services/serviceCore.js"></script>
+<script src="/assets/js/services/clientService.js"></script>
+<script src="/assets/js/page-client-access.js"></script>
+</body>
+</html>

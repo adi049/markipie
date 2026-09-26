@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blogs — Markipie Admin</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body class="admin-body">
+<div id="adminSidebar" class="admin-sidebar"></div>
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+<div class="admin-shell">
+  <header id="adminTopbar" class="admin-topbar"></header>
+  <main class="admin-main adm-reveal">
+
+    <div class="page-head">
+      <div>
+        <h1>Blogs</h1>
+        <p class="sub">Write, publish and manage posts — published blogs appear on the public site instantly.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn btn--primary" href="/admin/blogs/editor/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add Blog</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap" id="blogTableWrap"></div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/admin/assets/admin-data.js"></script>
+<script src="/admin/assets/admin.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (!Admin.requireAuth()) return;
+  var A = Admin, M = window.MarkipieData;
+
+  function render() {
+    M.blogs.list({ includeDrafts: true }).then(function (posts) {
+      var wrap = A.qs('#blogTableWrap');
+      if (!posts.length) {
+        wrap.innerHTML = '<div class="card-pad" style="text-align:center;padding:40px 20px">' +
+          '<p style="color:var(--ink-3);margin-bottom:16px">No blogs yet. Your first post takes a minute.</p>' +
+          '<a class="btn btn--primary" href="/admin/blogs/editor/">Create a blog</a></div>';
+        return;
+      }
+      wrap.innerHTML = '<table class="adm adm--stack"><thead><tr>' +
+        '<th>Post</th><th>Date</th><th>Status</th><th style="text-align:right">Actions</th>' +
+        '</tr></thead><tbody>' + posts.map(function (p) {
+          var publicUrl = '/blogs/article/?slug=' + encodeURIComponent(p.slug);
+          return '<tr>' +
+            '<td data-th="Post"><b>' + A.esc(p.title) + '</b><br><small style="color:var(--ink-3)">/' + A.esc(p.slug) + '</small></td>' +
+            '<td data-th="Date">' + M.util.fmtDate(p.date) + '</td>' +
+            '<td data-th="Status">' + (p.status === 'published'
+              ? '<span class="pill pill--active">Published</span>'
+              : '<span class="pill pill--draft">Draft</span>') + '</td>' +
+            '<td class="cell-actions"><div class="row-actions">' +
+              '<a class="icon-btn" href="/admin/blogs/editor/?id=' + encodeURIComponent(p.id) + '" title="Edit">' + A.icon('edit') + '</a>' +
+              '<a class="icon-btn" href="' + publicUrl + '" target="_blank" rel="noopener" title="View on site">' + A.icon('external') + '</a>' +
+              '<button class="icon-btn" data-toggle="' + p.id + '" title="' + (p.status === 'published' ? 'Unpublish' : 'Publish') + '">' +
+                (p.status === 'published' ? A.icon('eyeOff') : A.icon('eye')) + '</button>' +
+              '<button class="icon-btn icon-btn--danger" data-del="' + p.id + '" title="Delete">' + A.icon('trash') + '</button>' +
+            '</div></td>' +
+          '</tr>';
+        }).join('') + '</tbody></table>';
+
+      wrap.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-toggle]');
+        var d = e.target.closest('[data-del]');
+        if (t) {
+          var id = t.getAttribute('data-toggle');
+          var post = posts.filter(function (x) { return x.id === id; })[0];
+          if (!post) return;
+          var next = post.status === 'published' ? 'draft' : 'published';
+          M.blogs.update(id, { status: next }).then(function () {
+            A.toast(next === 'published' ? 'Blog published — it now appears on the public site.' : 'Blog moved to drafts.');
+            render();
+          });
+        }
+        if (d) {
+          var did = d.getAttribute('data-del');
+          A.confirm({ title: 'Delete this blog?', message: 'This permanently removes the post from the website.', confirmText: 'Delete', danger: true })
+            .then(function (yes) {
+              if (!yes) return;
+              M.blogs.remove(did).then(function () { A.toast('Blog deleted.'); render(); });
+            });
+        }
+      }, { once: true });
+    });
+  }
+  render();
+})();
+</script>
+</body>
+</html>

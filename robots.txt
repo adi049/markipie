@@ -1,0 +1,8 @@
+# Markipie — private areas are never indexed
+User-agent: *
+Disallow: /admin/
+Disallow: /client/
+Disallow: /find-your-photos/
+
+# Sitemap line is added at deploy time, once the production domain exists
+# (sitemap <loc> entries must be absolute URLs).

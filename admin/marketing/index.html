@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing Services — Markipie Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+</head>
+<body class="admin-body">
+  <div id="adminShell" class="admin-shell">
+    <aside id="adminSidebar" class="admin-sidebar" aria-label="Admin navigation"></aside>
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+    <main class="admin-main">
+      <header id="adminTopbar" class="admin-topbar"></header>
+
+      <section class="admin-content">
+        <div class="page-head">
+          <div>
+            <h1>Marketing Services</h1>
+            <p class="page-sub">The add-on services shown on the public Marketing page. Prices render verbatim — nothing is invented.</p>
+          </div>
+          <button class="btn btn--primary" id="mkAddBtn" type="button">+ Add Service</button>
+        </div>
+
+        <div class="card" id="mkListWrap" style="padding:0">
+          <div class="tbl-scroll">
+            <table class="adm" id="mkTable">
+              <thead><tr>
+                <th data-th="Service">Service</th><th data-th="Price">Price</th>
+                <th data-th="Status">Status</th><th data-th="Order">Order</th>
+                <th style="text-align:right" data-th="Actions">Actions</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ============ SERVICE MODAL ============ -->
+  <div class="modal-backdrop" id="mkModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mkModalTitle">
+      <h3 id="mkModalTitle">Add Marketing Service</h3>
+      <p class="modal-sub">Shown on the public Marketing page when active. Use the exact pricing the studio provided.</p>
+      <div class="form-grid form-grid--2">
+        <div class="field">
+          <label for="mTitle">Service Title</label>
+          <input id="mTitle" placeholder="e.g. Video Editing" maxlength="80" required>
+          <span class="err">Please enter the service title.</span>
+        </div>
+        <div class="field">
+          <label for="mSlug">Slug</label>
+          <input id="mSlug" placeholder="video-editing" maxlength="60">
+        </div>
+        <div class="field field--full">
+          <label for="mPrice">Starting Price (shown verbatim)</label>
+          <input id="mPrice" placeholder="Starting at ₹15,000/month" maxlength="60">
+        </div>
+        <div class="field field--full">
+          <label for="mIntro">Short Description</label>
+          <textarea id="mIntro" rows="3" maxlength="240" placeholder="One or two lines about the service."></textarea>
+        </div>
+        <div class="field">
+          <label for="mIcon">Icon</label>
+          <select id="mIcon">
+            <option value="share">Share</option><option value="video">Video</option>
+            <option value="image">Design</option><option value="megaphone">Megaphone</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="mSort">Sort Order</label>
+          <input id="mSort" type="number" min="1" step="1" placeholder="4">
+        </div>
+        <div class="field field--full">
+          <div class="perm-row"><span class="pr-label"><b>Active</b><small>Visible on the public Marketing page</small></span>
+            <button class="switch is-on" id="mActive" role="switch" aria-checked="true" aria-label="Active"></button></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn--ghost" data-mk-cancel type="button">Cancel</button>
+        <button class="btn btn--primary" id="mkSaveBtn" type="button">Save Service</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/data.js"></script>
+  <script src="/admin/assets/admin-data.js"></script>
+  <script src="/admin/assets/admin.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    if (!Admin.requireAuth()) return;
+    var A = Admin, M = window.MarkipieData;
+    var editingId = null;
+
+    function slugify(t) {
+      return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+    }
+    A.qs('#mTitle').addEventListener('input', function () {
+      var slug = A.qs('#mSlug');
+      if (!slug.dataset.dirty) slug.value = slugify(this.value);
+    });
+    A.qs('#mSlug').addEventListener('input', function () { this.dataset.dirty = '1'; });
+
+    A.qs('#mActive').addEventListener('click', function () {
+      this.classList.toggle('is-on');
+      this.setAttribute('aria-checked', this.classList.contains('is-on') ? 'true' : 'false');
+    });
+
+    function esc(x) { return A.esc(String(x == null ? '' : x)); }
+
+    function row(m) {
+      var active = m.status !== 'inactive';
+      return '<tr>' +
+        '<td data-th="Service"><b>' + esc(m.title) + '</b><small>' + esc(m.intro || '') + '</small></td>' +
+        '<td data-th="Price">' + esc(m.priceLine || '—') + '</td>' +
+        '<td data-th="Status">' + (active ? '<span class="pill pill--active">Active</span>' : '<span class="pill pill--muted">Inactive</span>') + '</td>' +
+        '<td data-th="Order">' + esc(m.sortOrder || '—') + '</td>' +
+        '<td class="cell-actions"><div class="row-actions">' +
+          '<button class="icon-btn" data-edit="' + esc(m.id) + '" title="Edit">' + A.icon('edit') + '</button>' +
+          '<button class="icon-btn" data-del="' + esc(m.id) + '" title="Delete">' + A.icon('trash') + '</button>' +
+        '</div></td></tr>';
+    }
+
+    function load() {
+      M.marketing.list({ all: true }).then(function (items) {
+        if (!items.length) {
+          A.qs('#mkListWrap').innerHTML = '<div class="empty" style="padding:34px;text-align:center">' +
+            '<p style="color:var(--ink-3);margin-bottom:14px">No marketing services yet.</p>' +
+            '<button class="btn btn--primary" id="emptyAdd">Add your first service</button></div>';
+          var ea = A.qs('#emptyAdd');
+          if (ea) ea.addEventListener('click', openAdd);
+          return;
+        }
+        A.qs('#mkTable tbody').innerHTML = items.map(row).join('');
+        A.qsa('[data-edit]').forEach(function (b) {
+          b.addEventListener('click', function () { M.marketing.get(b.getAttribute('data-edit')).then(openModal); });
+        });
+        A.qsa('[data-del]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var id = b.getAttribute('data-del');
+            if (!confirm('Delete this marketing service? The public Marketing page updates immediately.')) return;
+            M.marketing.remove(id).then(function () { M.clients.logEvent(null, 'service', 'Marketing service removed.'); load(); });
+          });
+        });
+      });
+    }
+
+    function openAdd() { openModal(null); }
+
+    function openModal(m) {
+      editingId = m ? m.id : null;
+      A.qs('#mkModalTitle').textContent = m ? 'Edit "' + m.title + '"' : 'Add Marketing Service';
+      A.qs('#mTitle').value = m ? m.title : '';
+      A.qs('#mSlug').value = m ? slugify(m.title) : '';
+      A.qs('#mSlug').dataset.dirty = m ? '1' : '';
+      A.qs('#mPrice').value = m ? (m.priceLine || '') : '';
+      A.qs('#mIntro').value = m ? (m.intro || '') : '';
+      A.qs('#mIcon').value = m ? (m.icon || 'megaphone') : 'megaphone';
+      A.qs('#mSort').value = m ? (m.sortOrder || '') : '';
+      var on = !m || m.status !== 'inactive';
+      A.qs('#mActive').classList.toggle('is-on', on);
+      A.qs('#mActive').setAttribute('aria-checked', on ? 'true' : 'false');
+      A.qs('#mkModal').classList.add('is-open');
+    }
+    function closeModal() { A.qs('#mkModal').classList.remove('is-open'); }
+
+    A.qs('#mkAddBtn').addEventListener('click', openAdd);
+    A.qs('[data-mk-cancel]').addEventListener('click', closeModal);
+    A.qs('#mkModal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
+
+    A.qs('#mkSaveBtn').addEventListener('click', function () {
+      var title = A.qs('#mTitle').value.trim();
+      var err = A.qs('#mTitle + .err');
+      if (!title) { err.classList.add('is-visible'); return; }
+      err.classList.remove('is-visible');
+      var btn = this;
+      btn.disabled = true; btn.textContent = 'Saving…';
+      var patch = {
+        title: title, priceLine: A.qs('#mPrice').value.trim(),
+        intro: A.qs('#mIntro').value.trim(), icon: A.qs('#mIcon').value,
+        status: A.qs('#mActive').classList.contains('is-on') ? 'active' : 'inactive',
+        sortOrder: Number(A.qs('#mSort').value) || undefined
+      };
+      var done = function () {
+        btn.disabled = false; btn.textContent = 'Save Service';
+        closeModal();
+        M.clients.logEvent(null, 'service', 'Marketing service "' + title + '" saved.');
+        load();
+      };
+      if (editingId) M.marketing.update(editingId, patch).then(done);
+      else M.marketing.create(patch).then(done);
+    });
+
+    load();
+  })();
+  </script>
+</body>
+</html>

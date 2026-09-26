@@ -1,18 +1,9 @@
 {
-  "name": "markipie",
-  "version": "2.0.0",
+  "name": "markipie-studio",
   "private": true,
-  "description": "MARKIPIE — wedding & event photography platform",
-  "main": "server.js",
+  "version": "1.0.0",
+  "description": "Markipie Studio static website with Supabase integration",
   "scripts": {
-    "start": "node server.js",
-    "migrate": "node migrate.js"
-  },
-  "engines": {
-    "node": ">=18"
-  },
-  "devDependencies": {
-    "@playwright/browser-chromium": "^1.63.0",
-    "playwright-core": "^1.63.0"
+    "start": "node server.mjs"
   }
 }

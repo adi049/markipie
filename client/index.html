@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Private Collection — Markipie</title>
+<meta name="description" content="Your private Markipie event collection.">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B2530'/%3E%3Cpath d='M18 40l10-14 8 8 10-12' stroke='%2300D8D4' stroke-width='5.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body class="page-client-dashboard">
+<a class="skip-link" href="#site">Skip to content</a>
+
+<header id="siteHeader" class="site-header"></header>
+<div id="mobileDrawer" class="drawer" hidden></div>
+
+<main id="site" class="site-main">
+
+  <section class="section" style="padding-top:calc(var(--header-h) + 44px)">
+    <div class="container">
+
+      <!-- guard state (invalid / inactive link) -->
+      <div class="cg-guard" id="cgGuard" hidden>
+        <div class="lock-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+        <h1 class="h3">This collection isn't available</h1>
+        <p class="lead" style="margin:10px auto 22px">The link may be inactive or the collection may have been moved. Please check your access link or enter your client code again.</p>
+        <a class="btn btn--primary" href="/client-access/">Back to Client Access</a>
+      </div>
+
+      <!-- event dashboard -->
+      <div id="dashRoot" hidden>
+        <div class="cg-head">
+          <div class="cg-title">
+            <span class="eyebrow eyebrow--green">Private Collection</span>
+            <h1 id="dashTitle" style="margin-top:10px">—</h1>
+            <p class="cg-sub" id="dashSub"></p>
+            <div class="cg-meta" id="dashMeta"></div>
+        <button class="btn btn--ghost btn--sm" id="dashExitBtn" type="button" style="margin-top:14px" aria-label="Exit and end this session">Exit session</button>
+          </div>
+          <div class="cg-actions">
+            <a class="btn btn--ghost" href="/client-access/">Switch collection</a>
+          </div>
+        </div>
+
+        <div class="fn-grid" id="fnGrid" style="margin-top:26px"><!-- function cards rendered from admin data --></div>
+
+        <!-- face scan within this collection -->
+        <div class="find-banner reveal">
+          <div class="fb-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg>
+          </div>
+          <h2>Find Your Photos</h2>
+          <p>Can't remember which event your photos are in? Scan your face and we'll find your photos across your events.</p>
+          <p class="fb-status" id="fbStatus" hidden></p>
+          <a class="btn btn--tech" id="findPhotosBtn" href="/find-your-photos/">Find Your Photos</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer id="siteFooter" class="site-footer"></footer>
+<div id="fabs" class="fabs"></div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/assets/js/face-engine.js"></script>
+<script src="/assets/js/site.js"></script>
+<script src="/assets/js/env.js"></script>
+<script src="/assets/js/lib/supabase.js"></script>
+<script src="/assets/js/services/serviceCore.js"></script>
+<script src="/assets/js/services/galleryService.js"></script>
+<script src="/assets/js/page-client-dashboard.js"></script>
+</body>
+</html>

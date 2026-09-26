@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — Markipie Admin</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body class="admin-body">
+<div id="adminSidebar" class="admin-sidebar"></div>
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+<div class="admin-shell">
+  <header id="adminTopbar" class="admin-topbar"></header>
+  <main class="admin-main adm-reveal">
+
+    <div class="page-head">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="sub">Studio overview — everything at a glance.</p>
+      </div>
+    </div>
+
+    <div class="note-banner">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span>Data is stored locally in this phase — the backend/database connects in the next development phase. Counts below reflect your actual saved records.</span>
+    </div>
+
+    <div class="stat-cards" id="statCards"><!-- stat cards rendered by script --></div>
+
+    <div class="card card-pad" id="aiIndexCard" style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+        <h2 style="font-size:16px">AI Indexing</h2>
+        <span class="pill pill--muted" id="aiJobPill">Idle</span>
+      </div>
+      <div class="idx-stats">
+        <div class="idx-stat"><b id="aiTotal">0</b><span>Total Photos</span></div>
+        <div class="idx-stat"><b id="aiIndexed">0</b><span>Indexed</span></div>
+        <div class="idx-stat"><b id="aiNoFace">0</b><span>No Face</span></div>
+        <div class="idx-stat"><b id="aiFailed">0</b><span>Failed</span></div>
+        <div class="idx-stat"><b id="aiFaces">0</b><span>Faces Found</span></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-3);margin-top:10px" id="aiLast">No indexing run yet.</p>
+    </div>
+
+    <div class="dash-grid">
+      <div class="card card-pad">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2 style="font-size:16px">Recent blogs</h2>
+          <a class="btn btn--sm btn--ghost" href="/admin/blogs/">Manage</a>
+        </div>
+        <div id="recentBlogs"></div>
+      </div>
+
+      <div class="card card-pad">
+        <h2 style="font-size:16px;margin-bottom:14px">Quick actions</h2>
+        <div class="quick-grid">
+          <a class="quick" href="/admin/blogs/editor/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>+ Add Blog</a>
+          <a class="quick" href="/admin/clients/add/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>+ Add Client</a>
+          <a class="quick" href="/admin/clients/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Manage Clients</a>
+          <a class="quick" href="/admin/blogs/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>Manage Blogs</a>
+          <a class="quick" href="/admin/services/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>+ Add Service</a>
+          <a class="quick" href="/admin/marketing/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-4 16-6-4-3 3-1-5z"/></svg>Marketing</a>
+          <a class="quick" href="/admin/activity/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Activity Logs</a>
+        </div>
+        <div class="note-banner" style="margin:18px 0 0">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Client access codes never appear in the public website code — they live only in the studio's data store.</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/assets/js/env.js"></script>
+<script src="/assets/js/lib/supabase.js"></script>
+<script src="/assets/js/services/serviceCore.js"></script>
+<script src="/assets/js/services/dataServices.js"></script>
+<script src="/assets/js/face-engine.js"></script>
+<script src="/assets/js/services/indexingService.js"></script>
+<script src="/admin/assets/admin-data.js"></script>
+<script src="/admin/assets/admin.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (!Admin.requireAuth()) return;
+  var M = window.MarkipieData;
+
+  function statCard(iconName, green, value, label) {
+    return '<div class="card stat-card">' +
+      '<span class="icon-chip' + (green ? ' icon-chip--green' : '') + '">' + Admin.icon(iconName) + '</span>' +
+      '<b>' + value + '</b><span>' + label + '</span></div>';
+  }
+
+  /* Phase 9: counters read real database values through the service
+     layer (Supabase when configured, the local data layer otherwise).
+     Empty database ⇒ 0. No invented statistics — ever. */
+  var countersSrc = (window.MKServices && MKServices.dashboard)
+    ? MKServices.dashboard.counters()
+    : Promise.resolve({ ok: false });
+  countersSrc.then(function (res) {
+    var c = res.ok ? res.data : null;
+    if (!c) return;
+    var n = function (v) { return Number(v || 0).toLocaleString('en-IN'); };
+    Admin.qs('#statCards').innerHTML =
+      statCard('users', false, String(c.totalClients), 'Total Clients') +
+      statCard('key', true, String(c.activeClients), 'Active Clients') +
+      statCard('wallet', false, String(c.pendingPayments != null ? c.pendingPayments : 0), 'Pending Payments') +
+      statCard('calendar', false, String(c.activeEvents != null ? c.activeEvents : 0), 'Active Events') +
+      statCard('image', false, n(c.totalPhotos), 'Total Photos') +
+      statCard('video', false, n(c.totalVideos), 'Total Videos') +
+      statCard('face', false, n(c.indexedPhotos), 'AI Indexed Photos') +
+      statCard('scan', false, n(c.indexedFaces), 'AI Indexed Faces') +
+      statCard('blog', false, String(c.totalBlogs), 'Total Blogs') +
+      statCard('eye', false, String(c.publishedBlogs), 'Published Blogs') +
+      statCard('tag', false, String(c.activeServices != null ? c.activeServices : 0), 'Active Services') +
+      statCard('drive', false, String(c.connectedDrives), 'Connected Drives');
+
+    /* AI INDEXING aggregate (Phase 12 spec §22) — real values from the
+       canonical media/face_embeddings/indexing_jobs (or their local
+       stores); no invented accuracy numbers, ever. */
+    M.clients.list().then(function (clients) {
+      /* local mode needs each client's function ids for the face stats */
+      var stats = clients.map(function (c) {
+        return M.functions.forClient(c.id, { admin: true }).then(function (fns) {
+          return MarkipieIndex.stats(c.id, (fns || []).map(function (f) { return f.id; }));
+        }).then(function (r) { return r.data; });
+      });
+      return Promise.all(stats);
+    }).then(function (all) {
+      var agg = all.reduce(function (a, s) {
+        a.total += s.totalPhotos || 0; a.indexed += s.indexed || 0;
+        a.noFace += s.noFace || 0; a.failed += s.failed || 0; a.faces += s.faces || 0;
+        if (s.processing) a.running = true;
+        if (s.lastIndexedAt && (!a.last || s.lastIndexedAt > a.last)) a.last = s.lastIndexedAt;
+        return a;
+      }, { total: 0, indexed: 0, noFace: 0, failed: 0, faces: 0, running: false, last: null });
+      Admin.qs('#aiTotal').textContent = agg.total.toLocaleString('en-IN');
+      Admin.qs('#aiIndexed').textContent = agg.indexed.toLocaleString('en-IN');
+      Admin.qs('#aiNoFace').textContent = agg.noFace.toLocaleString('en-IN');
+      Admin.qs('#aiFailed').textContent = agg.failed.toLocaleString('en-IN');
+      Admin.qs('#aiFaces').textContent = agg.faces.toLocaleString('en-IN');
+      Admin.qs('#aiJobPill').textContent = agg.running ? 'Processing' : 'Idle';
+      Admin.qs('#aiJobPill').className = 'pill ' + (agg.running ? 'pill--processing' : 'pill--muted');
+      Admin.qs('#aiLast').textContent = agg.last
+        ? 'Last indexing run: ' + M.util.fmtDate(agg.last.slice(0, 10)) + '. Per-client controls live in each client\u2019s page.'
+        : 'No indexing run yet — start AI Indexing from a client\u2019s page.';
+    }).catch(function () {});
+
+    M.blogs.list({ includeDrafts: true }).then(function (blogs) {
+      var recent = blogs.slice(0, 4);
+      Admin.qs('#recentBlogs').innerHTML = recent.length ? recent.map(function (b) {
+        return '<div class="list-row">' +
+          '<span class="thumb"><span class="ph-visual ph-' + (1 + (b.title.length % 6)) + '">' + Admin.icon('image') + '</span></span>' +
+          '<span class="grow"><b>' + Admin.esc(b.title) + '</b><small>' + M.util.fmtDate(b.date) + '</small></span>' +
+          (b.status === 'published'
+            ? '<span class="pill pill--active">Published</span>'
+            : '<span class="pill pill--draft">Draft</span>') +
+        '</div>';
+      }).join('') : '<p style="color:var(--ink-3);font-size:13.5px;padding:14px 0">No blogs yet — create your first one.</p>';
+    });
+  });
+})();
+</script>
+</body>
+</html>

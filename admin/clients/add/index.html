@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add Client — Markipie Admin</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body class="admin-body">
+<div id="adminSidebar" class="admin-sidebar"></div>
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+<div class="admin-shell">
+  <header id="adminTopbar" class="admin-topbar"></header>
+  <main class="admin-main adm-reveal" style="max-width:760px">
+
+    <div class="page-head">
+      <div>
+        <h1>Add Client</h1>
+        <p class="sub">Create the client, generate a secure code, confirm payment — then activate.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn btn--ghost btn--sm" href="/admin/clients/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Back</a>
+      </div>
+    </div>
+
+    <form class="card card-pad" id="clientForm" novalidate>
+      <div class="form-grid form-grid--2">
+        <div class="field">
+          <label for="cName">Client Name</label>
+          <input id="cName" placeholder="e.g. Adi & Shivangi" required maxlength="80">
+          <span class="err">Please enter the client's name.</span>
+        </div>
+        <div class="field">
+          <label for="cTitle">Event / Wedding Name <span style="color:var(--ink-3);font-weight:600;letter-spacing:0;text-transform:none">(dashboard heading)</span></label>
+          <input id="cTitle" placeholder="e.g. ADI WEDS SHIVANGI" maxlength="60">
+        </div>
+        <div class="field">
+          <label for="cContact">Contact Number</label>
+          <input id="cContact" type="tel" inputmode="tel" placeholder="+91 …">
+        </div>
+        <div class="field">
+          <label for="cEvent">Event Type</label>
+          <select id="cEvent">
+            <option>Wedding</option><option>Engagement</option><option>Pre-Wedding</option>
+            <option>Birthday</option><option>Reception</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cDate">Event Date</label>
+          <input id="cDate" type="date">
+        </div>
+        <div class="field">
+          <label>Client Access Code</label>
+          <div class="input-btn-row">
+            <input id="cCode" class="code-mono" readonly
+              style="letter-spacing:.14em;text-transform:uppercase;background:var(--soft,#F4F7FB)"
+              placeholder="GENERATE CODE FIRST" maxlength="24" required>
+            <button class="btn btn--soft" type="button" id="genCode">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3-3.5 3.5z"/></svg>Generate Code
+            </button>
+            <button class="btn btn--ghost" type="button" id="copyCode" title="Copy access code" aria-label="Copy access code">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+            </button>
+          </div>
+          <span class="err">Please generate an access code.</span>
+          <p class="hint">Unique secure code — regenerate as often as you like. Codes are never hardcoded and never shown to other clients.</p>
+        </div>
+        <div class="field field--full">
+          <label>Client Permissions</label>
+          <div class="perm-grid">
+            <div class="perm-row"><span class="pr-label"><b>Watermark</b><small>Branded overlay on gallery photos (presentation only)</small></span>
+              <button class="switch is-on" id="swWatermark" role="switch" aria-checked="true" aria-label="Watermark"></button></div>
+            <div class="perm-row"><span class="pr-label"><b>Download</b><small>Let this client download photos (app-level only)</small></span>
+              <button class="switch" id="swDownload" role="switch" aria-checked="false" aria-label="Download"></button></div>
+            <div class="perm-row"><span class="pr-label"><b>AI Face Search</b><small>Find Your Photos face scan for this client</small></span>
+              <button class="switch is-on" id="swAiSearch" role="switch" aria-checked="true" aria-label="AI Face Search"></button></div>
+          </div>
+          <p class="hint">All five permissions — including Client Access and Video Access — can be changed anytime from the client page.</p>
+        </div>
+        <div class="field">
+          <label for="cPay">Payment Status</label>
+          <select id="cPay"><option value="pending">Pending</option><option value="received">Received</option></select>
+          <p class="hint">Confirm later from the client page if pending.</p>
+        </div>
+        <div class="field">
+          <label for="cStatus">Client Status</label>
+          <select id="cStatus">
+            <option value="inactive">Inactive</option>
+            <option value="active">Active</option>
+          </select>
+          <p class="hint">Activation requires confirmed payment — the client page enforces this.</p>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn--primary" type="submit" id="saveClient">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Create Client
+        </button>
+        <a class="btn btn--ghost" href="/admin/clients/">Cancel</a>
+      </div>
+    </form>
+
+  </main>
+</div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/admin/assets/admin-data.js"></script>
+<script src="/admin/assets/admin.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (!Admin.requireAuth()) return;
+  var A = Admin, M = window.MarkipieData;
+
+  var name = A.qs('#cName'), title = A.qs('#cTitle'), code = A.qs('#cCode');
+
+  /* permissions on the create form */
+  var perms = { watermark: true, download: false, aiSearch: true };
+  [['swWatermark', 'watermark'], ['swDownload', 'download'], ['swAiSearch', 'aiSearch']].forEach(function (pair) {
+    A.qs('#' + pair[0]).addEventListener('click', function () {
+      perms[pair[1]] = !perms[pair[1]];
+      this.classList.toggle('is-on', perms[pair[1]]);
+      this.setAttribute('aria-checked', perms[pair[1]]);
+    });
+  });
+
+  /* unique secure code — generated on demand, regenerate = click again */
+  function generate() {
+    M.clients.list().then(function (list) {
+      var used = {}; list.forEach(function (c) { used[c.code] = 1; });
+      var code = '';
+      do { code = M.clients.generateCode(title.value || name.value || 'Client'); }
+      while (used[code]);
+      var el = A.qs('#cCode');
+      el.value = code;
+      el.closest('.field').classList.remove('has-err');
+    });
+  }
+  A.qs('#genCode').addEventListener('click', generate);
+  A.qs('#copyCode').addEventListener('click', function () {
+    var v = code.value;
+    if (!v) { A.toast('Generate a code first.', 'error'); return; }
+    A.copy(v).then(function (ok) { A.toast(ok ? 'Access code copied.' : 'Copy failed — please copy manually.', ok ? undefined : 'error'); });
+  });
+
+  A.qs('#clientForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ok = true;
+    if (!name.value.trim()) { name.closest('.field').classList.add('has-err'); ok = false; }
+    if (!code.value.trim()) { code.closest('.field').classList.add('has-err'); ok = false; }
+    if (!ok) return;
+    var btnGen = A.qs('#genCode');
+    btnGen.disabled = true;
+
+    var status = A.qs('#cStatus').value;
+    var pay = A.qs('#cPay').value;
+    if (status === 'active' && pay !== 'received') {
+      A.toast('Activation requires confirmed payment — set Payment Status to Received first.', 'error');
+      return;
+    }
+
+    var btn = A.qs('#saveClient');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin" aria-hidden="true"></span> Creating…';
+    M.clients.create({
+      name: name.value.trim(),
+      eventTitle: title.value.trim(),
+      contact: A.qs('#cContact').value.trim(),
+      code: code.value.trim(),
+      eventType: A.qs('#cEvent').value,
+      eventDate: A.qs('#cDate').value,
+      paymentStatus: pay,
+      status: status,
+      permissions: perms
+    }).then(function (c) {
+      M.clients.logEvent(c.id, 'client', 'Client created — code ' + c.code + ', payment ' + pay + ', status ' + status + '.');
+      A.toast('Client created — code ' + c.code);
+      setTimeout(function () { location.href = '/admin/clients/client/?id=' + encodeURIComponent(c.id); }, 600);
+    });
+  });
+})();
+</script>
+</body>
+</html>

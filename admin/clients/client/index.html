@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Client Details — Markipie Admin</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body class="admin-body">
+<div id="adminSidebar" class="admin-sidebar"></div>
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+<div class="admin-shell">
+  <header id="adminTopbar" class="admin-topbar"></header>
+  <main class="admin-main adm-reveal" style="max-width:900px">
+
+    <div class="page-head">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb" id="pageCrumbs" style="margin-bottom:6px">
+          <a href="/admin/dashboard/">Dashboard</a><span>→</span><a href="/admin/clients/">Clients</a><span>→</span><b id="crumbName">Client</b>
+        </nav>
+        <h1 id="headName">Client Details</h1>
+        <p class="sub" id="headSub">Client → Payment → Drive → Indexing → Permissions.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn btn--ghost btn--sm" href="/admin/clients/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Back</a>
+      </div>
+    </div>
+
+    <div id="detailsWrap" hidden>
+      <!-- ============ ACCESS CONTROL ============ -->
+      <div class="card card-pad" style="margin-bottom:18px">
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span class="code-mono" id="detailCode" style="font-size:15px;background:var(--bg);border:1px dashed var(--line-2);padding:8px 14px;border-radius:10px">—</span>
+            <button class="btn btn--sm btn--soft" id="copyCodeBtn" type="button">Copy Code</button>
+            <button class="btn btn--sm btn--ghost" id="regenCodeBtn" type="button">Regenerate</button>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span id="pillPayment"></span>
+            <span id="pillStatus"></span>
+          </div>
+        </div>
+
+        <div class="form-grid form-grid--2" style="align-items:start">
+          <div>
+            <h2 style="font-size:14px;margin-bottom:10px">Payment</h2>
+            <div class="perm-row" style="margin-bottom:10px">
+              <span class="pr-label"><b id="payLabel">Payment pending</b><small>Gallery access requires confirmed payment</small></span>
+              <span class="status-btns-row">
+                <button class="btn btn--sm btn--primary" id="confirmPayBtn" type="button">Confirm Payment Received</button>
+                <button class="btn btn--sm btn--ghost" id="setPendingBtn" type="button" hidden>Mark as Pending</button>
+              </span>
+            </div>
+            <p class="hint" id="payHint" style="margin:0">Confirming payment enables client activation. This is a manual studio confirmation — never automatic.</p>
+          </div>
+          <div>
+            <h2 style="font-size:14px;margin-bottom:10px">Client status</h2>
+            <div class="status-btns" id="statusBtns">
+              <button class="status-btn" data-st="inactive">Inactive</button>
+              <button class="status-btn" data-st="active">Active</button>
+              <button class="status-btn" data-st="suspended">Suspended</button>
+              <button class="status-btn" data-st="archived">Archived</button>
+            </div>
+            <p class="hint" id="statusHint" style="margin:10px 0 0">Only ACTIVE clients with confirmed payment can open their galleries.</p>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+          <a class="btn btn--sm btn--soft" id="viewGalleryBtn" href="#" target="_blank" rel="noopener">Open Client Dashboard</a>
+        </div>
+      </div>
+
+      <!-- ============ PERMISSIONS ============ -->
+      <div class="card card-pad" style="margin-bottom:18px">
+        <h2 style="font-size:15px;margin-bottom:4px">Client Permissions</h2>
+        <p style="font-size:12.5px;color:var(--ink-3);margin-bottom:14px">Applied instantly across the client's dashboard and galleries.</p>
+        <div class="perm-grid">
+          <div class="perm-row">
+            <span class="pr-label"><b>Client Access</b><small>Master switch — their code stops working when OFF</small></span>
+            <button class="switch" id="swAccess" role="switch" aria-label="Client Access"></button>
+          </div>
+          <div class="perm-row">
+            <span class="pr-label"><b>Watermark</b><small>Markipie watermark on gallery previews</small></span>
+            <button class="switch" id="swWatermark" role="switch" aria-label="Watermark"></button>
+          </div>
+          <div class="perm-row">
+            <span class="pr-label"><b>Download</b><small>Show download controls to the client</small></span>
+            <button class="switch" id="swDownload" role="switch" aria-label="Download"></button>
+          </div>
+          <div class="perm-row">
+            <span class="pr-label"><b>AI Face Search</b><small>"Find Your Photos" inside their collection</small></span>
+            <button class="switch" id="swAiSearch" role="switch" aria-label="AI Face Search"></button>
+          </div>
+          <div class="perm-row">
+            <span class="pr-label"><b>Video Access</b><small>Videos appear in their galleries</small></span>
+            <button class="switch" id="swVideos" role="switch" aria-label="Video Access"></button>
+          </div>
+        </div>
+        <p class="hint" style="margin:10px 0 0">Download control is an application-level permission — it cannot prevent screenshots once an image is visible.</p>
+      </div>
+
+      <!-- ============ CLIENT DETAILS ============ -->
+      <div class="card card-pad" style="margin-bottom:18px">
+        <h2 style="font-size:15px;margin-bottom:14px">Client details</h2>
+        <form id="editForm" novalidate>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label for="cName">Client Name</label>
+              <input id="cName" required maxlength="80">
+              <span class="err">Please enter the client's name.</span>
+            </div>
+            <div class="field">
+              <label for="cTitle">Event / Wedding Title</label>
+              <input id="cTitle" placeholder="e.g. ADI WEDS SHIVANGI" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="cContact">Contact Number</label>
+              <input id="cContact" type="tel" inputmode="tel" placeholder="+91 …">
+            </div>
+            <div class="field">
+              <label for="cEvent">Event Type</label>
+              <select id="cEvent">
+                <option>Wedding</option><option>Engagement</option><option>Pre-Wedding</option>
+                <option>Birthday</option><option>Reception</option><option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cDate">Event Date</label>
+              <input id="cDate" type="date">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn--primary" type="submit" id="saveBtn">Save Changes</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ============ GOOGLE DRIVE ============ -->
+      <div class="card card-pad" style="margin-bottom:18px">
+        <h2 style="font-size:15px;margin-bottom:4px">Google Drive</h2>
+        <p style="font-size:12.5px;color:var(--ink-3);margin-bottom:14px">Media stays in Google Drive — only the folder reference is stored.</p>
+        <div class="drive-row">
+          <input id="driveUrl" aria-label="Google Drive folder link" placeholder="https://drive.google.com/drive/folders/…" style="flex:1 1 240px;min-width:0;min-height:44px;padding:10px 14px;border-radius:11px;border:1.5px solid var(--line-2)">
+          <button class="btn btn--primary btn--sm" id="connectDriveBtn" type="button">Connect Drive</button>
+          <button class="btn btn--ghost btn--sm" id="syncDriveBtn" type="button">Sync Now</button>
+        </div>
+        <div class="drive-meta">
+          <div class="dm"><small>Folder ID</small><b id="dmFolderId">—</b></div>
+          <div class="dm"><small>Connection</small><b id="dmStatus">Not connected</b></div>
+          <div class="dm"><small>Last synced</small><b id="dmSynced">Never</b></div>
+        </div>
+        <p class="hint" style="margin:10px 0 0">Overview only — the real connection lives on each function: open a function and use <b>Drive &amp; Sync</b> to authorize Google Drive, pick its folder and sync media metadata.</p>
+      </div>
+
+      <!-- ============ PHOTO INDEXING ============ -->
+      <div class="card card-pad" style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+          <div>
+            <h2 style="font-size:15px">Photo AI Indexing <span class="pill" id="idxStatusPill" style="vertical-align:2px;margin-left:6px">Not started</span></h2>
+            <p style="font-size:12.5px;color:var(--ink-3)">AI face-indexing processes <b>photos only</b> — videos are never scanned. Runs in background batches; you can leave this page.</p>
+          </div>
+        </div>
+        <div class="idx-stats">
+          <div class="idx-stat"><b id="idxTotal">0</b><span>Total Photos</span></div>
+          <div class="idx-stat"><b id="idxProcessed">0</b><span>Processed</span></div>
+          <div class="idx-stat"><b id="idxFaces">0</b><span>Faces Found</span></div>
+          <div class="idx-stat"><b id="idxPending">0</b><span>Pending</span></div>
+          <div class="idx-stat"><b id="idxFailed">0</b><span>Failed</span></div>
+        </div>
+        <div class="idx-progress"><i id="idxBar"></i></div>
+        <p class="idx-msg" id="idxMsg">Not started.</p>
+        <div class="form-actions" style="margin-top:12px">
+          <button class="btn btn--primary" id="idxStartBtn" type="button">Start AI Indexing</button>
+          <button class="btn btn--ghost btn--sm" id="idxPauseBtn" type="button" hidden>Pause</button>
+          <button class="btn btn--ghost btn--sm" id="idxResumeBtn" type="button" hidden>Resume</button>
+          <button class="btn btn--ghost btn--sm" id="idxCancelBtn" type="button" hidden>Cancel</button>
+          <button class="btn btn--soft btn--sm" id="idxRetryBtn" type="button" hidden>Re-index Failed</button>
+          <button class="btn btn--soft btn--sm" id="idxReindexAllBtn" type="button">Re-index All</button>
+        </div>
+        <div class="idx-fails" id="idxFails" hidden>
+          <b style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)">Recent failures</b>
+          <ul id="idxFailList"></ul>
+        </div>
+      </div>
+
+      <!-- ============ FUNCTIONS ============ -->
+      <div class="card card-pad" style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+          <div>
+            <h2 style="font-size:15px">Events</h2>
+            <p style="font-size:12.5px;color:var(--ink-3)">Each function is an event card in the client's dashboard. Map its Drive sub-folder here.</p>
+          </div>
+          <button class="btn btn--primary btn--sm" id="addFnBtn" type="button">+ Add Function</button>
+        </div>
+        <div id="fnList"></div>
+      </div>
+
+      <!-- ============ ACTIVITY ============ -->
+      <div class="card card-pad" style="margin-bottom:18px">
+        <h2 style="font-size:15px;margin-bottom:12px">Activity &amp; sync</h2>
+        <ul class="activity-log" id="activityLog"></ul>
+      </div>
+
+      <!-- ============ DANGER ============ -->
+      <div class="card card-pad">
+        <h2 style="font-size:15px;margin-bottom:10px;color:var(--danger)">Danger zone</h2>
+        <p style="font-size:13px;color:var(--ink-3);margin-bottom:14px">Deleting removes the client, their access code, functions and job history permanently.</p>
+        <div class="row-actions" style="gap:10px;flex-wrap:wrap">
+          <button class="btn btn--danger btn--sm" id="deleteBtn" type="button">Delete Client</button>
+          <button class="btn btn--soft btn--sm" id="delEmbBtn" type="button">Delete AI Embeddings</button>
+        </div>
+        <p class="hint" style="margin-top:10px">Deleting AI embeddings removes only the face index — Google Drive originals and gallery media are never touched. Photos return to "pending" so indexing can run again.</p>
+      </div>
+    </div>
+
+    <div class="card card-pad" id="missingCard" hidden>
+      <p style="color:var(--ink-3);text-align:center;padding:20px 0">Client not found. <a href="/admin/clients/" style="color:var(--blue);font-weight:600">Back to clients</a></p>
+    </div>
+
+  </main>
+</div>
+
+<!-- function editor modal -->
+<div class="modal-backdrop" id="fnModal">
+  <div class="modal modal--wide" role="dialog" aria-modal="true" aria-label="Function editor">
+    <h3 id="fnModalTitle">Add Function</h3>
+    <p class="modal-sub" id="fnModalSub">Appears as an event card in this client's dashboard.</p>
+    <div class="field">
+      <label for="fName">Function Name</label>
+      <input id="fName" placeholder="e.g. Mehendi" maxlength="40" required>
+      <span class="err">Please enter a function name.</span>
+    </div>
+    <div class="form-grid form-grid--2">
+      <div class="field">
+        <label for="fDate">Event Date</label>
+        <input id="fDate" type="date">
+      </div>
+      <div class="field">
+        <label for="fStatus">Status</label>
+        <select id="fStatus"><option value="active">Active</option><option value="disabled">Disabled</option></select>
+      </div>
+    </div>
+    <div class="form-grid form-grid--2">
+      <div class="field">
+        <label for="fDrive">Google Drive Sub-Folder</label>
+        <input id="fDrive" placeholder="https://drive.google.com/drive/folders/…">
+        <div class="drive-row" style="margin-top:8px">
+          <span class="pill pill--muted" id="fDriveStatus">NOT CONNECTED</span>
+          <button class="btn btn--soft btn--sm" id="fDriveConnect" type="button">Connect Drive</button>
+        </div>
+        <p class="drive-hint" id="driveHint"></p>
+      </div>
+      <div class="field">
+        <label for="fDownload">Download Permission</label>
+        <select id="fDownload">
+          <option value="none">Follow client setting</option>
+          <option value="photos">Photos only</option>
+          <option value="all">Photos &amp; videos</option>
+        </select>
+        <p class="hint">Client-level Download switch must also be ON for downloads to appear.</p>
+      </div>
+      <div class="field">
+        <label for="fAI">AI Face Search</label>
+        <select id="fAI">
+          <option value="on">ON — this function's photos are searchable by face</option>
+          <option value="off">OFF — excluded from face search</option>
+        </select>
+        <p class="hint">Effective only when the client-level AI Face Search switch is also ON.</p>
+      </div>
+    </div>
+    <div class="form-grid form-grid--2">
+      <div class="field">
+        <label for="fPhotos">Photo Count</label>
+        <input id="fPhotos" type="number" min="0" value="0">
+      </div>
+      <div class="field">
+        <label for="fVideos">Video Count</label>
+        <input id="fVideos" type="number" min="0" value="0">
+      </div>
+    </div>
+    <div class="field">
+      <label for="fCoverUrl">Cover Image <span style="color:var(--ink-3);font-weight:600;letter-spacing:0;text-transform:none">(optional)</span></label>
+      <div class="input-btn-row">
+        <input id="fCoverUrl" placeholder="Image URL">
+        <label class="btn btn--soft" style="white-space:nowrap">Upload<input type="file" id="fCoverFile" accept="image/*" hidden></label>
+      </div>
+      <div class="cover-preview-row" id="coverRow" hidden>
+        <img id="coverImg" alt="Cover preview">
+        <button class="btn btn--sm btn--danger" type="button" id="coverRemove">Remove</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="fSort">Sort Order</label>
+      <input id="fSort" type="number" min="0" value="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn--ghost" type="button" data-fn-cancel>Cancel</button>
+      <button class="btn btn--primary" type="button" id="fnSaveBtn">Save Function</button>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/assets/js/face-engine.js"></script>
+<script src="/assets/js/env.js"></script>
+<script src="/assets/js/lib/supabase.js"></script>
+<script src="/assets/js/services/serviceCore.js"></script>
+<script src="/assets/js/services/indexingService.js"></script>
+<script src="/assets/js/services/clientService.js"></script>
+<script src="/assets/js/services/functionService.js"></script>
+<script src="/assets/js/services/driveService.js"></script>
+<script src="/admin/assets/admin-data.js"></script>
+<script src="/admin/assets/admin.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (!Admin.requireAuth()) return;
+  var A = Admin, M = window.MarkipieData;
+  var id = new URLSearchParams(location.search).get('id');
+  if (!id) { A.qs('#missingCard').hidden = false; return; }
+
+  var client = null;
+  var coverSrc = null;
+  var editingFn = null;
+  var idxTimer = null;
+
+  function fmtWhen(iso) {
+    if (!iso) return 'Never';
+    try {
+      var d = new Date(iso);
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) + ', ' +
+             d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) { return '—'; }
+  }
+  function statusLabel(st) {
+    return { active: 'Active', inactive: 'Inactive', suspended: 'Suspended', archived: 'Archived', disabled: 'Suspended' }[st] || st;
+  }
+
+  /* ================= load ================= */
+  M.clients.get(id).then(function (c) {
+    if (!c) { A.qs('#missingCard').hidden = false; return; }
+    client = c;
+    document.title = c.name + ' — Markipie Admin';
+    A.qs('#headName').textContent = c.name;
+        var cr = A.qs('#crumbName'); if (cr) cr.textContent = c.name;
+    A.qs('#headSub').textContent = (c.eventTitle ? c.eventTitle + ' · ' : '') + (c.eventType || 'Client');
+    A.qs('#viewGalleryBtn').href = '/client/?id=' + encodeURIComponent(c.id);
+    A.qs('#detailsWrap').hidden = false;
+    renderAccess();
+    renderPermissions();
+    renderDetails();
+    renderDrive();
+    renderActivity();
+    loadFunctions();
+    initIndexing();
+  });
+
+  /* ================= access / payment / status ================= */
+  function renderAccess() {
+    A.qs('#detailCode').textContent = client.code;
+    A.qs('#pillPayment').innerHTML = client.paymentStatus === 'received'
+      ? '<span class="pill pill--received">✓ Payment Confirmed</span>'
+      : '<span class="pill pill--pending">Payment Pending</span>';
+    A.qs('#payLabel').textContent = client.paymentStatus === 'received' ? 'Payment confirmed' : 'Payment pending';
+    A.qs('#confirmPayBtn').hidden = client.paymentStatus === 'received';
+    A.qs('#setPendingBtn').hidden = client.paymentStatus !== 'received';
+    var st = client.status;
+    var stClass = { active: 'pill--active', inactive: 'pill--inactive', suspended: 'pill--suspended', archived: 'pill--archived', disabled: 'pill--suspended' }[st] || 'pill--inactive';
+    A.qs('#pillStatus').innerHTML = '<span class="pill ' + stClass + '">Client ' + statusLabel(st) + '</span>';
+    A.qs('#payLabel').textContent = client.paymentStatus === 'received' ? 'Payment received' : 'Payment pending';
+    A.qs('#payHint').textContent = client.paymentStatus === 'received'
+      ? 'Payment confirmed by the studio. Activation is available.'
+      : 'Confirming payment enables client activation. This is a manual studio confirmation — never automatic.';
+    A.qsa('#statusBtns .status-btn').forEach(function (b) {
+      b.classList.toggle('is-active', b.getAttribute('data-st') === st);
+    });
+  }
+
+  A.qs('#copyCodeBtn').addEventListener('click', function () {
+    A.copy(client.code).then(function (ok) {
+      A.toast(ok ? 'Access code copied.' : 'Copy failed — please copy manually.', ok ? undefined : 'error');
+    });
+  });
+  A.qs('#regenCodeBtn').addEventListener('click', function () {
+    A.confirm({ title: 'Regenerate access code?', message: 'The current code stops working immediately. Share the new code with the client.', confirmText: 'Regenerate' })
+      .then(function (yes) {
+        if (!yes) return;
+        M.clients.regenerateCode(client.id).then(function (c) {
+          client = c;
+          A.toast('New code: ' + c.code);
+          renderAccess();
+        });
+      });
+  });
+  A.qs('#confirmPayBtn').addEventListener('click', function () {
+    A.confirm({ title: 'Confirm payment received?', message: 'The client becomes eligible for activation.', confirmText: 'Confirm Payment' })
+      .then(function (yes) {
+        if (!yes) return;
+        M.clients.update(client.id, { paymentStatus: 'received' }).then(function (c) {
+          client = c;
+          M.clients.logEvent(client.id, 'payment', 'Payment confirmed received by the studio.');
+          A.toast('Payment received — client can now be activated.');
+          renderAccess();
+        });
+      });
+  });
+  A.qs('#setPendingBtn').addEventListener('click', function () {
+    A.confirm({ title: 'Mark payment as pending?', message: 'The client loses gallery access until payment is confirmed again.', confirmText: 'Mark Pending', danger: true })
+      .then(function (yes) {
+        if (!yes) return;
+        M.clients.update(client.id, { paymentStatus: 'pending' }).then(function (c) {
+          client = c;
+          M.clients.logEvent(client.id, 'payment', 'Payment marked pending by the studio — gallery access paused.');
+          A.toast('Payment marked pending — their code stops working.', 'error');
+          renderAccess();
+        });
+      });
+  });
+  A.qs('#statusBtns').addEventListener('click', function (e) {
+    var b = e.target.closest('.status-btn');
+    if (!b) return;
+    var target = b.getAttribute('data-st');
+    if (target === client.status) return;
+    if (target === 'active' && client.paymentStatus !== 'received') {
+      A.toast('Confirm payment before activating this client.', 'error');
+      return;
+    }
+    M.clients.update(client.id, { status: target }).then(function (c) {
+      client = c;
+      M.clients.logEvent(client.id, 'status', 'Client status set to ' + statusLabel(target) + '.');
+      A.toast(target === 'active' ? 'Client active — their code now works.'
+        : target === 'suspended' ? 'Client suspended — their code no longer opens galleries.'
+        : 'Client status updated.');
+      renderAccess();
+    });
+  });
+
+  /* ================= permissions ================= */
+  function renderPermissions() {
+    var p = Object.assign({ clientAccess: true, watermark: true, download: false, aiSearch: true, videos: true }, client.permissions || {});
+    [['swAccess', 'clientAccess'], ['swWatermark', 'watermark'], ['swDownload', 'download'], ['swAiSearch', 'aiSearch'], ['swVideos', 'videos']]
+      .forEach(function (pair) {
+        var el = document.getElementById(pair[0]);
+        el.classList.toggle('is-on', !!p[pair[1]]);
+        el.setAttribute('aria-checked', !!p[pair[1]]);
+      });
+  }
+  [['swAccess', 'clientAccess', 'Client Access'], ['swWatermark', 'watermark', 'Watermark'], ['swDownload', 'download', 'Download'],
+   ['swAiSearch', 'aiSearch', 'AI Face Search'], ['swVideos', 'videos', 'Video Access']]
+    .forEach(function (pair) {
+      document.getElementById(pair[0]).addEventListener('click', function () {
+        var cur = Object.assign({}, client.permissions || {});
+        cur[pair[1]] = !cur[pair[1]];
+        M.clients.update(client.id, { permissions: cur }).then(function (c) {
+          client = c;
+          M.clients.logEvent(client.id, 'permission', pair[2] + ' turned ' + (cur[pair[1]] ? 'ON' : 'OFF') + '.');
+          A.toast(pair[2] + (cur[pair[1]] ? ' enabled.' : ' disabled.'));
+          renderPermissions();
+        });
+      });
+    });
+
+  /* ================= details form ================= */
+  function renderDetails() {
+    A.qs('#cName').value = client.name;
+    A.qs('#cTitle').value = client.eventTitle || '';
+    A.qs('#cContact').value = client.contact || '';
+    A.qs('#cEvent').value = client.eventType || 'Wedding';
+    A.qs('#cDate').value = client.eventDate || '';
+  }
+  ['cName'].forEach(function (fid) {
+    document.getElementById(fid).addEventListener('input', function () { this.closest('.field').classList.remove('has-err'); });
+  });
+  A.qs('#editForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = A.qs('#cName');
+    if (!name.value.trim()) { name.closest('.field').classList.add('has-err'); return; }
+    M.clients.update(client.id, {
+      name: name.value.trim(), eventTitle: A.qs('#cTitle').value.trim(),
+      contact: A.qs('#cContact').value.trim(), eventType: A.qs('#cEvent').value,
+      eventDate: A.qs('#cDate').value
+    }).then(function (c) {
+      client = c;
+      M.clients.logEvent(client.id, 'details', 'Client details updated.');
+      A.toast('Client updated.');
+      renderDetails();
+    });
+  });
+
+  /* ================= drive ================= */
+  function renderDrive() {
+    var d = client.drive || {};
+    A.qs('#driveUrl').value = d.folderUrl || '';
+    A.qs('#dmFolderId').textContent = d.folderId || '—';
+    A.qs('#dmStatus').textContent = d.connected ? 'Connected' : 'Not connected';
+    A.qs('#dmSynced').textContent = fmtWhen(d.lastSynced);
+  }
+  A.qs('#connectDriveBtn').addEventListener('click', function () {
+    var url = A.qs('#driveUrl').value.trim();
+    var fid = M.drive.parseFolderId(url);
+    if (!fid) { A.toast('Paste a valid Google Drive folder link or ID.', 'error'); return; }
+    var d = { connected: true, folderId: fid, folderUrl: url, status: 'connected', lastSynced: new Date().toISOString(), syncStatus: 'synced' };
+    M.clients.update(client.id, { drive: d }).then(function (c) {
+      client = c;
+      M.clients.logEvent(client.id, 'drive', 'Drive folder connected (' + fid + ').');
+      A.toast('Drive connected.');
+      renderDrive();
+    });
+  });
+  A.qs('#syncDriveBtn').addEventListener('click', function () {
+    if (!client.drive || !client.drive.connected) { A.toast('Connect a Drive folder first.', 'error'); return; }
+    var d = Object.assign({}, client.drive, { lastSynced: new Date().toISOString(), syncStatus: 'synced' });
+    M.clients.update(client.id, { drive: d }).then(function (c) {
+      client = c;
+      M.clients.logEvent(client.id, 'drive', 'Drive sync completed.');
+      A.toast('Drive sync completed.');
+      renderDrive();
+    });
+  });
+
+  /* ============ AI indexing (Phase 12 — REAL pipeline) ============
+     MarkipieIndex drives the canonical indexing_jobs +
+     face_embeddings + media.processing_status. Photos only,
+     batched, resumable; the admin's authenticated browser is the
+     worker and every write is admin-RLS gated. */
+  var idxTimer = null;
+  var lastStats = null;
+
+  function pillForStatus(st) {
+    if (!st) return '<span class="pill pill--muted">Not started</span>';
+    return {
+      queued: '<span class="pill pill--processing">Queued</span>',
+      processing: '<span class="pill pill--processing">Processing</span>',
+      completed: '<span class="pill pill--completed">Completed</span>',
+      failed: '<span class="pill pill--failed">Failed</span>',
+      paused: '<span class="pill pill--processing">Paused</span>',
+      cancelled: '<span class="pill pill--muted">Cancelled</span>'
+    }[st] || '<span class="pill pill--muted">Not started</span>';
+  }
+
+  function renderIdx(stats) {
+    lastStats = stats;
+    var job = stats.job;
+    var processed = (stats.indexed + stats.noFace + stats.failed);
+    var total = stats.totalPhotos || 0;
+    A.qs('#idxTotal').textContent = total.toLocaleString('en-IN');
+    A.qs('#idxProcessed').textContent = processed.toLocaleString('en-IN');
+    A.qs('#idxFaces').textContent = (stats.faces || 0).toLocaleString('en-IN');
+    A.qs('#idxPending').textContent = Math.max(0, total - processed).toLocaleString('en-IN');
+    A.qs('#idxFailed').textContent = (stats.failed || 0).toLocaleString('en-IN');
+    var running = stats.processing;
+    A.qs('#idxStatusPill').innerHTML = running ? pillForStatus('processing') : pillForStatus(job ? job.status : null);
+    var pct = total ? Math.round((processed / total) * 100) : 0;
+    A.qs('#idxBar').style.width = pct + '%';
+    var msg = 'Not started.';
+    if (running) msg = 'Indexing your photos… ' + processed.toLocaleString('en-IN') + ' / ' + total.toLocaleString('en-IN') + ' Photos · ' + pct + '%';
+    else if (job && job.status === 'paused') msg = 'Paused at ' + (job.processed || 0).toLocaleString('en-IN') + ' / ' + (job.total || total).toLocaleString('en-IN') + ' Photos — resume anytime.';
+    else if (job && job.status === 'completed') msg = 'Indexing completed — ' + (job.faces || stats.faces || 0).toLocaleString('en-IN') + ' faces found' + (stats.noFace ? ', ' + stats.noFace.toLocaleString('en-IN') + ' photos without a face.' : '.');
+    else if (job && job.status === 'failed') msg = job.error || 'The last indexing run failed — use Re-index Failed.';
+    else if (job && job.status === 'cancelled') msg = 'Indexing was cancelled — progress is saved.';
+    else if (job) msg = 'Last run: ' + (job.processed || 0).toLocaleString('en-IN') + ' photos processed.';
+    A.qs('#idxMsg').textContent = msg;
+
+    A.qs('#idxStartBtn').hidden = running;
+    A.qs('#idxStartBtn').textContent = job ? 'Start New Indexing' : 'Start AI Indexing';
+    A.qs('#idxPauseBtn').hidden = !running;
+    A.qs('#idxCancelBtn').hidden = !running;
+    A.qs('#idxResumeBtn').hidden = running || !job || job.status !== 'paused';
+    A.qs('#idxRetryBtn').hidden = running || !(stats.failed > 0);
+    A.qs('#idxReindexAllBtn').hidden = running;
+    A.qs('#idxReindexAllBtn').disabled = false;
+  }
+
+  function refreshIdx() {
+    return M.functions.forClient(id, { admin: true }).then(function (fns) {
+      return MarkipieIndex.stats(id, fns.map(function (f) { return f.id; }));
+    }).then(function (r) { renderIdx(r.data); });
+  }
+  function initIndexing() {
+    refreshIdx();
+    if (idxTimer) clearInterval(idxTimer);
+    idxTimer = setInterval(refreshIdx, 2500);
+    MarkipieIndex.onChange(function () { refreshIdx(); });
+  }
+  A.qs('#idxStartBtn').addEventListener('click', function () {
+    MarkipieIndex.start(id).then(function (r) {
+      A.toast(r.ok ? 'AI indexing started — photos only, videos excluded.' : (r.error || 'Could not start indexing.'), r.ok ? '' : 'error');
+    });
+  });
+  A.qs('#idxPauseBtn').addEventListener('click', function () {
+    MarkipieIndex.pause().then(function () { A.toast('Indexing paused — progress is saved.'); refreshIdx(); });
+  });
+  A.qs('#idxResumeBtn').addEventListener('click', function () {
+    MarkipieIndex.resume(id).then(function () { A.toast('Indexing resumed.'); });
+  });
+  A.qs('#idxCancelBtn').addEventListener('click', function () {
+    MarkipieIndex.cancel().then(function () { A.toast('Indexing cancelled — progress is saved.'); refreshIdx(); });
+  });
+  A.qs('#idxRetryBtn').addEventListener('click', function () {
+    MarkipieIndex.retryFailed(id).then(function () { A.toast('Re-indexing failed photos…'); });
+  });
+  A.qs('#idxReindexAllBtn').addEventListener('click', function () {
+    if (!confirm('This will remove existing face embeddings for this scope and rebuild them from the synced photos.')) return;
+    MarkipieIndex.reindexAll(id).then(function (r) {
+      A.toast(r.ok ? 'Re-indexing all photos…' : (r.error || 'Could not start re-indexing.'), r.ok ? '' : 'error');
+    });
+  });
+  window.addEventListener('pagehide', function () { if (idxTimer) clearInterval(idxTimer); });
+
+  /* ================= functions ================= */
+  var DRIVE_ROW_LABELS = { not_connected: ['No Drive', 'pill--muted'], connected: ['Drive Connected', 'pill--active'], syncing: ['Syncing', 'pill--processing'], synced: ['Synced', 'pill--completed'], error: ['Drive Error', 'pill--failed'] };
+  function drivePillFor(f) {
+    var st = f.driveStatus || (f.driveFolderUrl || f.driveFolderId ? 'connected' : 'not_connected');
+    var d = DRIVE_ROW_LABELS[st] || DRIVE_ROW_LABELS.not_connected;
+    return '<span class="pill ' + d[1] + '">' + d[0] + '</span>';
+  }
+  function loadFunctions() {
+    M.functions.forClient(id, { admin: true }).then(function (fns) {
+      var list = A.qs('#fnList');
+      if (!fns.length) {
+        list.innerHTML = '<p style="color:var(--ink-3);font-size:13.5px;padding:16px 0 4px">No functions yet. Add Haldi, Mehendi, Wedding… — each becomes a card in the client\u2019s dashboard.</p>';
+        return;
+      }
+      list.innerHTML = fns.map(function (f) {
+        var meta = [f.eventDate ? M.util.fmtDate(f.eventDate) : null,
+                    (f.photoCount ? f.photoCount + ' photos' : null),
+                    (f.videoCount ? f.videoCount + ' videos' : null)].filter(Boolean).join(' · ');
+        return '<div class="fn-row">' +
+          '<span class="grow"><b>' + A.esc(f.name) + '</b><small>' + (meta || 'No date set') + '</small></span>' +
+          '<span class="pills">' +
+            drivePillFor(f) +
+            (f.status === 'active'
+              ? '<span class="pill pill--active">Active</span>'
+              : '<span class="pill pill--disabled">Disabled</span>') +
+          '</span>' +
+          '<span class="row-actions">' +
+            '<button class="icon-btn" data-drive="' + f.id + '" title="Drive &amp; Sync">' + A.icon('drive') + '</button>' +
+            '<button class="icon-btn" data-fnidx="' + f.id + '" title="Re-index this function (AI)">' + A.icon('scan') + '</button>' +
+            '<button class="icon-btn" data-edit="' + f.id + '" title="Edit">' + A.icon('edit') + '</button>' +
+            '<button class="icon-btn" data-toggle="' + f.id + '" title="' + (f.status === 'active' ? 'Disable' : 'Enable') + '">' + (f.status === 'active' ? A.icon('ban') : A.icon('check')) + '</button>' +
+            '<button class="icon-btn icon-btn--danger" data-del="' + f.id + '" title="Delete">' + A.icon('trash') + '</button>' +
+          '</span>' +
+        '</div>';
+      }).join('');
+    });
+  }
+  A.qs('#fnList').addEventListener('click', function (e) {
+    var fnx = e.target.closest('[data-fnidx]');
+    if (fnx) {
+      var fnid = fnx.getAttribute('data-fnidx');
+      M.functions.get(fnid, { admin: true }).then(function (ff) {
+        A.confirm({
+          title: 'Re-index "' + (ff ? ff.name : 'this function') + '"?',
+          message: 'The existing face index for this function is rebuilt. Viewing is never interrupted.',
+          confirmText: 'Re-index', danger: false
+        }).then(function (yes) {
+          if (!yes) return;
+          MarkipieIndex.reindexAll(id, fnid).then(function (r) {
+            A.toast(r.ok ? 'Re-indexing "' + (ff ? ff.name : '') + '"…' : (r.error || 'Could not start re-indexing.'), r.ok ? '' : 'error');
+          });
+        });
+      });
+      return;
+    }
+    var drv = e.target.closest('[data-drive]');
+    var ed = e.target.closest('[data-edit]');
+    var tg = e.target.closest('[data-toggle]');
+    var dl = e.target.closest('[data-del]');
+    if (drv) {
+      M.functions.get(drv.getAttribute('data-drive'), { admin: true }).then(function (f) {
+        MKDrive.openPanel(drv.getAttribute('data-drive'), id, f ? f.name : 'Function');
+        MKDrive.onSynced(function () { loadFunctions(); });
+      });
+    }
+    if (ed) openFnModal(ed.getAttribute('data-edit'));
+    if (tg) {
+      M.functions.get(tg.getAttribute('data-toggle'), { admin: true }).then(function (f) {
+        if (!f) return;
+        M.functions.update(f.id, { status: f.status === 'active' ? 'disabled' : 'active' }).then(function () {
+          A.toast(f.status === 'active' ? 'Function hidden from the client dashboard.' : 'Function is live in the dashboard.');
+          loadFunctions();
+        });
+      });
+    }
+    if (dl) {
+      M.functions.get(dl.getAttribute('data-del'), { admin: true }).then(function (f) {
+        A.confirm({ title: 'Delete ' + (f ? f.name : 'function') + '?', message: 'The function disappears from the client dashboard. Media metadata is removed with it.', confirmText: 'Delete', danger: true })
+          .then(function (yes) {
+            if (!yes) return;
+            M.functions.remove(dl.getAttribute('data-del')).then(function () { A.toast('Function deleted.'); loadFunctions(); });
+          });
+      });
+    }
+  });
+
+  /* ---------- function modal ---------- */
+  function fileToDataURL(file, maxW) {
+    return new Promise(function (resolve, reject) {
+      if (!/^image\//.test(file.type)) { reject(new Error('not-image')); return; }
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function () {
+        var scale = Math.min(1, (maxW || 900) / img.width);
+        var cv = document.createElement('canvas');
+        cv.width = Math.round(img.width * scale);
+        cv.height = Math.round(img.height * scale);
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        URL.revokeObjectURL(url);
+        resolve(cv.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('read-fail')); };
+      img.src = url;
+    });
+  }
+  function setCover(src) {
+    coverSrc = src || null;
+    A.qs('#coverRow').hidden = !coverSrc;
+    if (coverSrc) A.qs('#coverImg').src = coverSrc;
+  }
+  A.qs('#fCoverFile').addEventListener('change', function () {
+    var f = this.files[0]; this.value = '';
+    if (!f) return;
+    fileToDataURL(f).then(setCover).catch(function () { A.toast('Could not read that image.', 'error'); });
+  });
+  A.qs('#fCoverUrl').addEventListener('change', function () { setCover(this.value.trim()); });
+  A.qs('#coverRemove').addEventListener('click', function () { setCover(null); A.qs('#fCoverUrl').value = ''; });
+  A.qs('#fDrive').addEventListener('input', function () {
+    var fid = M.drive.parseFolderId(this.value);
+    var hint = A.qs('#driveHint');
+    if (fid && this.value.trim()) {
+      hint.textContent = '✓ Drive sub-folder mapped — id: ' + fid;
+      hint.classList.add('is-visible');
+    } else {
+      hint.classList.remove('is-visible');
+    }
+  });
+
+  function openFnModal(fnId) {
+    editingFn = null;
+    A.qs('#fnModalTitle').textContent = fnId ? 'Edit Function' : 'Add Function';
+    A.qs('#fName').value = ''; A.qs('#fDate').value = client.eventDate || '';
+    A.qs('#fDrive').value = ''; A.qs('#driveHint').classList.remove('is-visible');
+    A.qs('#fStatus').value = 'active'; A.qs('#fDownload').value = 'none';
+    A.qs('#fAI').value = 'on';
+    A.qs('#fPhotos').value = '0'; A.qs('#fVideos').value = '0';
+    setDriveStatus('not_connected');
+    setCover(null); A.qs('#fCoverUrl').value = '';
+    M.functions.forClient(id, { admin: true }).then(function (fns) { A.qs('#fSort').value = String(fns.length + 1); });
+    if (fnId) {
+      M.functions.get(fnId, { admin: true }).then(function (f) {
+        if (!f) return;
+        editingFn = f;
+        A.qs('#fName').value = f.name; A.qs('#fDate').value = f.eventDate || '';
+        A.qs('#fDrive').value = f.driveFolderUrl || f.driveFolderId || '';
+        A.qs('#fStatus').value = f.status; A.qs('#fDownload').value = f.downloadPermission || 'none';
+        A.qs('#fAI').value = f.aiFaceSearch === false ? 'off' : 'on';
+        A.qs('#fPhotos').value = String(f.photoCount || 0);
+        A.qs('#fVideos').value = String(f.videoCount || 0);
+        A.qs('#fSort').value = String(f.sortOrder || 0);
+        setCover(f.cover || null);
+        A.qs('#fCoverUrl').value = f.cover && String(f.cover).indexOf('data:') !== 0 ? f.cover : '';
+        setDriveStatus(f.driveStatus || (f.driveFolderUrl || f.driveFolderId ? 'connected' : 'not_connected'));
+        if (f.driveFolderUrl || f.driveFolderId) {
+          var fid2 = M.drive.parseFolderId(f.driveFolderUrl || f.driveFolderId);
+          A.qs('#driveHint').textContent = '✓ Drive sub-folder mapped — id: ' + fid2;
+          A.qs('#driveHint').classList.add('is-visible');
+        }
+      });
+    }
+    A.qs('#fnModal').classList.add('is-open');
+    setTimeout(function () { A.qs('#fName').focus(); }, 250);
+  }
+  function closeFnModal() { A.qs('#fnModal').classList.remove('is-open'); }
+  var DRIVE_STATUS_LABELS = { not_connected: 'NOT CONNECTED', connected: 'CONNECTED', syncing: 'SYNCING', synced: 'SYNCED', error: 'ERROR' };
+  function setDriveStatus(st) {
+    var el = A.qs('#fDriveStatus');
+    el.textContent = DRIVE_STATUS_LABELS[st] || st;
+    el.className = 'pill ' + ({ not_connected: 'pill--muted', connected: 'pill--active', syncing: 'pill--processing', synced: 'pill--completed', error: 'pill--failed' }[st] || 'pill--muted');
+    el.dataset.st = st;
+  }
+  A.qs('#fDriveConnect').addEventListener('click', function () {
+    var raw = A.qs('#fDrive').value.trim();
+    var fid = M.drive.parseFolderId(raw);
+    if (raw && fid) {                     /* paste-a-link path (quick mapping) */
+      if (raw.indexOf('http') === -1) A.qs('#fDrive').value = 'https://drive.google.com/drive/folders/' + fid;
+      A.qs('#driveHint').textContent = '✓ Drive sub-folder mapped — id: ' + fid;
+      A.qs('#driveHint').classList.add('is-visible');
+      setDriveStatus('connected');
+      A.toast('Drive folder connected — media stays in Drive, only the reference is stored.');
+      return;
+    }
+    /* full flow: authorize → browse → pick folder → CONNECTED (Phase 10).
+       The function must exist first so drive_connections has its 1:1 row. */
+    if (!editingFn || !editingFn.id) {
+      A.toast('Save the function first, then connect its Drive folder.', 'error');
+      return;
+    }
+    MKDrive.openPicker({
+      functionId: editingFn.id, clientId: id,
+      functionName: A.qs('#fName').value.trim() || editingFn.name || 'Function',
+      onSaved: function (folder) {
+        A.qs('#fDrive').value = 'https://drive.google.com/drive/folders/' + folder.id;
+        A.qs('#driveHint').textContent = '✓ "' + folder.name + '" connected — id: ' + folder.id;
+        A.qs('#driveHint').classList.add('is-visible');
+        setDriveStatus('connected');
+        loadFunctions();
+      }
+    });
+  });
+  A.qs('#addFnBtn').addEventListener('click', function () { openFnModal(null); });
+  A.qs('#fnModal').addEventListener('click', function (e) {
+    if (e.target === this || e.target.closest('[data-fn-cancel]')) closeFnModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && A.qs('#fnModal').classList.contains('is-open')) closeFnModal();
+  });
+  A.qs('#fName').addEventListener('input', function () { this.closest('.field').classList.remove('has-err'); });
+  A.qs('#fnSaveBtn').addEventListener('click', function () {
+    var name = A.qs('#fName').value.trim();
+    if (!name) { A.qs('#fName').closest('.field').classList.add('has-err'); return; }
+    var driveUrl = A.qs('#fDrive').value.trim();
+    var st = A.qs('#fDriveStatus').dataset.st || 'not_connected';
+    if (driveUrl && st === 'not_connected') st = 'connected';
+    if (!driveUrl) st = 'not_connected';
+    var data = {
+      clientId: id, name: name, eventDate: A.qs('#fDate').value,
+      driveFolderUrl: driveUrl, driveFolderId: M.drive.parseFolderId(driveUrl), driveStatus: st,
+      cover: coverSrc, downloadPermission: A.qs('#fDownload').value,
+      aiFaceSearch: A.qs('#fAI').value !== 'off',
+      photoCount: Number(A.qs('#fPhotos').value) || 0,
+      videoCount: Number(A.qs('#fVideos').value) || 0,
+      sortOrder: Number(A.qs('#fSort').value) || 0,
+      status: A.qs('#fStatus').value
+    };
+    var p = editingFn ? M.functions.update(editingFn.id, data) : M.functions.create(data);
+    p.then(function () {
+      A.toast(editingFn ? 'Function updated.' : 'Function added — it now appears in the client\u2019s dashboard.');
+      closeFnModal();
+      loadFunctions();
+    });
+  });
+
+  /* ================= activity ================= */
+  function renderActivity() {
+    M.clients.events(client.id).then(function (evs) {
+      A.qs('#activityLog').innerHTML = evs.length ? evs.slice(0, 25).map(function (ev) {
+        return '<li><span class="dot"></span><span>' + A.esc(ev.text) +
+          '<time>' + fmtWhen(ev.at) + '</time></span></li>';
+      }).join('') : '<li><span>No activity yet — connect Drive, confirm payment or start indexing.</span></li>';
+    });
+  }
+
+  /* ================= delete ================= */
+    A.qs('#delEmbBtn').addEventListener('click', function () {
+      A.confirm({
+        title: 'Delete these AI embeddings?',
+        message: 'Are you sure you want to delete these AI embeddings? The face index is removed; Google Drive photos are NOT deleted. Indexing can be run again anytime.',
+        confirmText: 'Delete Embeddings', danger: true
+      }).then(function (yes) {
+        if (!yes) return;
+        MarkipieIndex.deleteEmbeddings(id).then(function (r) {
+          if (r && r.ok) { M.clients.logEvent(id, 'indexing', 'AI embeddings deleted (Drive originals untouched).'); A.toast('AI embeddings deleted.'); refreshIdx(); }
+          else A.toast((r && r.error) || 'Could not delete embeddings.', 'error');
+        });
+      });
+    });
+  A.qs('#deleteBtn').addEventListener('click', function () {
+    if (!client) return;
+    A.confirm({ title: 'Delete ' + client.name + '?', message: 'This removes the client, their access code and all functions permanently.', confirmText: 'Delete', danger: true })
+      .then(function (yes) {
+        if (!yes) return;
+        M.clients.remove(client.id).then(function () {
+          A.toast('Client deleted.');
+          setTimeout(function () { location.href = '/admin/clients/'; }, 500);
+        });
+      });
+  });
+})();
+</script>
+<div id="mkDriveRoot"></div>
+</body>
+</html>

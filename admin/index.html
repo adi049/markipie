@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Login — Markipie</title>
+<meta name="description" content="Markipie admin login.">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B2530'/%3E%3Cpath d='M18 40l10-14 8 8 10-12' stroke='%2300D8D4' stroke-width='5.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body class="admin-login-body">
+
+<form class="login-card adm-reveal" id="loginForm" novalidate>
+  <div class="login-brand">
+    <img src="/assets/markipie-wordmark.svg" alt="Markipie">
+    <small>Admin Panel</small>
+  </div>
+
+  <div class="login-error" id="loginError" role="alert">Invalid username or password.</div>
+
+  <div class="field">
+    <label for="admUser">Username / Admin ID</label>
+    <input id="admUser" name="username" autocomplete="username" spellcheck="false" autocapitalize="none" placeholder="Admin ID" required>
+    <span class="err">Please enter your admin ID.</span>
+  </div>
+
+  <div class="field">
+    <label for="admPass">Password</label>
+    <div class="pw-wrap">
+      <input id="admPass" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+      <button class="pw-eye" type="button" id="pwEye" aria-label="Show password">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <span class="err">Please enter your password.</span>
+  </div>
+
+  <button class="btn btn--primary btn--block" type="submit" id="loginBtn">LOGIN</button>
+  <p class="login-foot">Protected area · authorised studio access only</p>
+</form>
+
+<script src="/assets/js/data.js"></script>
+<script src="/assets/js/env.js"></script>
+<script src="/assets/js/lib/supabase.js"></script>
+<script src="/assets/js/services/serviceCore.js"></script>
+<script src="/assets/js/services/authService.js"></script>
+<script src="/admin/assets/admin-data.js"></script>
+<script src="/admin/assets/admin.js"></script>
+<script>
+(function () {
+  'use strict';
+  var A = window.Admin;
+  /* already signed in → straight to the dashboard */
+  var authed = window.MarkipieData.auth.session();
+  if (!authed && window.MKServices && MKServices.auth.mode() === 'supabase') {
+    MKServices.auth.getSession().then(function (sess) { if (sess) location.replace('/admin/dashboard/'); });
+    return;
+  }
+  if (authed) { location.replace('/admin/dashboard/'); return; }
+
+  var form = A.qs('#loginForm');
+  var err = A.qs('#loginError');
+  var btn = A.qs('#loginBtn');
+  var user = A.qs('#admUser');
+  var pass = A.qs('#admPass');
+  var eye = A.qs('#pwEye');
+
+  eye.addEventListener('click', function () {
+    var show = pass.type === 'password';
+    pass.type = show ? 'text' : 'password';
+    eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    eye.innerHTML = show
+      ? '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>'
+      : '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    pass.focus();
+  });
+
+  [user, pass].forEach(function (el) {
+    el.addEventListener('input', function () {
+      err.classList.remove('is-visible');
+      el.closest('.field').classList.remove('has-err');
+    });
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ok = true;
+    if (!user.value.trim()) { user.closest('.field').classList.add('has-err'); ok = false; }
+    if (!pass.value) { pass.closest('.field').classList.add('has-err'); ok = false; }
+    if (!ok) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin" aria-hidden="true"></span> Signing in…';
+    /* Phase 9: Supabase Auth is the canonical mechanism (authService).
+       The local dev check remains only while Supabase is unconfigured. */
+    var attempt = (window.MKServices && MKServices.auth)
+      ? MKServices.auth.login(user.value.trim(), pass.value)
+      : window.MarkipieData.auth.login(user.value.trim(), pass.value);
+    Promise.resolve(attempt).then(function (res) {
+      if (res.ok) {
+        btn.innerHTML = 'Welcome back…';
+        setTimeout(function () { location.href = '/admin/dashboard/'; }, 350);
+      } else {
+        err.textContent = res.error || 'Invalid username or password.';
+        err.classList.add('is-visible');
+        btn.disabled = false;
+        btn.textContent = 'LOGIN';
+        pass.value = '';
+        pass.focus();
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

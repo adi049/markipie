@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gallery — Markipie Private Collection</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B2530'/%3E%3Cpath d='M18 40l10-14 8 8 10-12' stroke='%2300D8D4' stroke-width='5.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body class="page-client-gallery">
+<a class="skip-link" href="#site">Skip to content</a>
+
+<header id="siteHeader" class="site-header"></header>
+<div id="mobileDrawer" class="drawer" hidden></div>
+
+<main id="site" class="site-main">
+
+  <section class="section" style="padding-top:calc(var(--header-h) + 40px)">
+    <div class="container">
+
+      <!-- guard state -->
+      <div class="cg-guard" id="cgGuard" hidden>
+        <div class="lock-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+        <span class="eyebrow eyebrow--blue">Access required</span>
+        <h1 class="h3" style="margin-top:10px">This gallery isn't available</h1>
+        <p class="lead" style="margin:10px auto 22px">The link may be inactive or the gallery may have been moved. Please open your collection again.</p>
+        <a class="btn btn--primary" id="guardBackBtn" href="/client-access/">Back to Client Access</a>
+      </div>
+
+      <!-- gallery -->
+      <div id="galRoot" hidden>
+        <div class="cg-toprow">
+          <a class="cg-crumb" id="crumbLink" href="/client/?id=REPLACED">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+            <span id="crumbText">All Events</span>
+          </a>
+          <button class="icon-btn cg-exit" id="cgExitBtn" type="button" aria-label="Exit gallery and end this session" title="Exit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+          </button>
+        </div>
+        <div class="cg-head">
+          <div class="cg-title">
+            <span class="eyebrow eyebrow--green" id="galEyebrow">Event Gallery</span>
+            <h1 id="galTitle" style="margin-top:10px">—</h1>
+            <p class="cg-event" id="galEvent">—</p>
+            <div class="cg-stats" id="galStats" hidden>
+              <span class="cg-stat"><b id="statPhotos">0</b> <small>Photos</small></span>
+              <span class="cg-stat-dot" aria-hidden="true"></span>
+              <span class="cg-stat"><b id="statVideos">0</b> <small>Videos</small></span>
+            </div>
+            <div class="cg-meta" id="galMeta"></div>
+          </div>
+          <div class="cg-actions">
+            <a class="btn btn--ghost" id="galFindBtn" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg>
+              Find Your Photos
+            </a>
+          </div>
+        </div>
+
+        <nav class="cg-events" id="cgEvents" aria-label="Event galleries" hidden></nav>
+        <div class="cg-filters" id="cgFilters" hidden></div>
+        <div class="cg-grid cg-grid--masonry" id="mediaGrid"></div>
+        <div class="cg-sentinel" id="cgSentinel" hidden><span class="spin"></span></div>
+        <p class="cg-count-note" id="cgCountNote"></p>
+        <p class="cg-note" id="cgDownloadNote" hidden>Download is enabled by the studio for this gallery — it is an app-level permission and cannot prevent screenshots or screen recording.</p>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer id="siteFooter" class="site-footer"></footer>
+<div id="fabs" class="fabs"></div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/assets/js/face-engine.js"></script>
+<script src="/assets/js/site.js"></script>
+<script src="/assets/js/env.js"></script>
+<script src="/assets/js/lib/supabase.js"></script>
+<script src="/assets/js/services/serviceCore.js"></script>
+<script src="/assets/js/services/galleryService.js"></script>
+<script src="/assets/js/page-client-gallery.js"></script>
+</body>
+</html>

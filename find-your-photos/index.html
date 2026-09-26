@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Find Your Photos — Markipie</title>
+<meta name="description" content="Scan your face to find your photos — live camera only, nothing is stored.">
+<meta property="og:title" content="Find Your Photos — Markipie">
+<meta property="og:description" content="Scan your face to find your photos — live camera only, nothing is stored.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B2530'/%3E%3Cpath d='M18 40l10-14 8 8 10-12' stroke='%2300D8D4' stroke-width='5.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body class="page-find-photos">
+<a class="skip-link" href="#site">Skip to content</a>
+
+<header id="siteHeader" class="site-header"></header>
+<div id="mobileDrawer" class="drawer" hidden></div>
+
+<main id="site" class="site-main">
+
+  <section class="page-hero" style="padding-bottom:26px">
+    <div class="container">
+      <span class="eyebrow eyebrow--green">AI Face Scan</span>
+      <h1 class="h1" style="font-size:clamp(1.8rem,6.5vw,2.6rem)">Find Your Photos</h1>
+      <p class="lead">Start a private live Face Scan and discover the moments captured for you.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:8px">
+    <div class="container">
+      <div class="scan-shell">
+
+        <div class="fp-scope-chip" id="scopeChip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span id="scopeChipText"></span>
+        </div>
+
+        <div class="scan-stage" id="scanStage">
+          <video id="scanVideo" autoplay playsinline muted></video>
+
+          <div class="scan-frame" id="scanFrame" hidden><i></i></div>
+          <div class="scan-face-ring" aria-hidden="true"></div>
+          <div class="scan-line" aria-hidden="true"></div>
+          <div class="scan-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="scan-live-chip" id="scanLiveChip" hidden><i></i> Live</span>
+          <span class="scan-face-chip" id="faceChip" hidden>FACE DETECTED</span>
+
+          <div class="scan-veil" id="scanVeil">
+            <div>
+              <div class="veil-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <h2 id="veilTitle">Allow camera access to find your photos.</h2>
+              <p id="veilText">Face Scan works live — in real time. Your camera image is never recorded, uploaded or stored.</p>
+              <div class="veil-actions">
+                <button class="btn btn--primary" id="enableCamBtn" type="button">Enable Camera</button>
+                <a class="btn btn--ghost" href="/client-access/">Use a client code instead</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="face-scan-launch-wrap" id="faceScanLaunchWrap">
+          <button class="face-scan-launch" id="faceScanLaunch" type="button">
+            <span class="face-scan-launch-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></svg>
+            </span>
+            <span class="face-scan-launch-copy"><b>OPEN LIVE CAMERA</b><small>Scan your face to find your private event photos</small></span>
+            <span class="face-scan-launch-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <div class="camera-action-bar" id="cameraActionBar" hidden>
+          <div class="camera-action-copy">
+            <span class="camera-action-dot"></span>
+            <div><b>Ready when you are</b><small>Open your live camera to start the private face scan.</small></div>
+          </div>
+          <button class="btn btn--primary" id="openCameraNow" type="button">Open Live Camera</button>
+        </div>
+
+        <div class="scan-status" id="scanStatus"></div>
+
+        <div class="scan-btn-row">
+          <button class="btn btn--tech btn--block" id="scanBtn" type="button" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg>
+            Scan My Face
+          </button>
+        </div>
+
+        <p class="scan-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Live camera only — uploads and photo selection are intentionally not available. Your camera image is used in this session only and is never saved. Only galleries you have access to are ever searched.</span>
+        </p>
+
+        <div class="scan-results" id="scanResults" hidden></div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="siteFooter" class="site-footer"></footer>
+<div id="fabs" class="fabs"></div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/assets/js/face-engine.js"></script>
+<script src="/assets/js/site.js"></script>
+<script src="/assets/js/visual-upgrade.js"></script>
+<script src="/assets/js/env.js"></script>
+<script src="/assets/js/lib/supabase.js"></script>
+<script src="/assets/js/services/serviceCore.js"></script>
+<script src="/assets/js/services/galleryService.js"></script>
+<script src="/assets/js/page-find-photos.js"></script>
+</body>
+</html>

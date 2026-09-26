@@ -1,11 +1,14 @@
-node_modules/
-data/.adminpass
-data/.adminpass.txt
-data/.backup-*/
-data/sessions.json
-data/clientSessions.json
-data/pending.json
+# environment — never commit real credentials
 .env
-data/shares.json
+.env.local
+.env.*.local
+assets/js/env.local.js
+
+# dependencies / build
+node_modules/
 dist/
-private-media/
+.vite/
+
+# OS noise
+.DS_Store
+Thumbs.db

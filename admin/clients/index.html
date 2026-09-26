@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clients — Markipie Admin</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body class="admin-body">
+<div id="adminSidebar" class="admin-sidebar"></div>
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+<div class="admin-shell">
+  <header id="adminTopbar" class="admin-topbar"></header>
+  <main class="admin-main adm-reveal">
+
+    <div class="page-head">
+      <div>
+        <h1>Client Access</h1>
+        <p class="sub">Create and manage private client galleries.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn btn--primary" href="/admin/clients/add/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add Client</a>
+      </div>
+    </div>
+
+    <div class="note-banner">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Access codes live only in this studio data store — they are never included in the public website code. Sample data is loaded on first use and can be deleted.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-pad" style="padding-bottom:0">
+        <div class="input-btn-row" style="max-width:460px">
+          <input id="clientSearch" placeholder="Search by name, event, contact or code…">
+        </div>
+      </div>
+      <div class="chips" id="clientChips" role="group" aria-label="Client filters" style="padding:12px 16px 0">
+        <button class="chip is-active" data-f="all" type="button">All</button>
+        <button class="chip" data-f="active" type="button">Active</button>
+        <button class="chip" data-f="inactive" type="button">Inactive</button>
+        <button class="chip" data-f="suspended" type="button">Suspended</button>
+        <button class="chip" data-f="archived" type="button">Archived</button>
+        <button class="chip" data-f="pay-pending" type="button">Payment Pending</button>
+        <button class="chip" data-f="pay-received" type="button">Payment Received</button>
+        <button class="chip" data-f="ai-on" type="button">AI Enabled</button>
+        <button class="chip" data-f="ai-off" type="button">AI Disabled</button>
+      </div>
+      <div class="table-wrap card-pad" id="clientTableWrap" style="padding-top:14px"></div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/admin/assets/admin-data.js"></script>
+<script src="/admin/assets/admin.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (!Admin.requireAuth()) return;
+  var A = Admin, M = window.MarkipieData;
+  var query = '';
+  var clientFilter = 'all';
+
+  function statusPill(c) {
+    return c.status === 'active'
+      ? '<span class="pill pill--active">Active</span>'
+      : '<span class="pill pill--disabled">Disabled</span>';
+  }
+
+  function render(list) {
+    var wrap = A.qs('#clientTableWrap');
+    if (!list.length) {
+      wrap.innerHTML = '<div style="text-align:center;padding:36px 12px">' +
+        '<p style="color:var(--ink-3);margin-bottom:16px">' + (query ? 'No clients match your search.' : 'No clients yet — create your first client access.') + '</p>' +
+        (query ? '' : '<a class="btn btn--primary" href="/admin/clients/add/">Add a client</a>') + '</div>';
+      return;
+    }
+    var jobsById = {};
+    jobsIndex.forEach(function (j) { if (!jobsById[j.clientId]) jobsById[j.clientId] = j; });
+    var fnsAll = M.store.read('functions_v1', []) || [];
+    wrap.innerHTML = '<table class="adm adm--stack"><thead><tr>' +
+      '<th>Client</th><th>Event</th><th>Payment</th><th>Status</th><th>Drive</th><th>Photos</th><th>Functions</th><th>Created</th><th style="text-align:right">Actions</th>' +
+      '</tr></thead><tbody>' + list.map(function (c) {
+        var job = jobsById[c.id];
+        var idxPill = !job ? '<span class="pill pill--muted">—</span>'
+          : job.status === 'processing' ? '<span class="pill pill--processing">Indexing</span>'
+          : job.status === 'completed' ? '<span class="pill pill--completed">Indexed</span>'
+          : '<span class="pill pill--failed">Failed</span>';
+        var p = c.permissions || {};
+        return '<tr>' +
+          '<td data-th="Client"><b>' + A.esc(c.name) + '</b>' +
+            '<br><small style="color:var(--ink-3)">' + A.esc(c.code) + '</small>' +
+            '<br><span class="pills" style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap">' +
+              '<span class="pill ' + (p.watermark !== false ? 'pill--active' : 'pill--muted') + '" title="Watermark">WM</span>' +
+              '<span class="pill ' + (p.download ? 'pill--active' : 'pill--muted') + '" title="Download">DL</span>' +
+              '<span class="pill ' + (p.aiSearch !== false ? 'pill--active' : 'pill--muted') + '" title="AI Face Search">AI</span>' +
+            '</span></td>' +
+          '<td data-th="Event"><b>' + A.esc(c.eventTitle || c.eventType || '—') + '</b>' +
+            '<br><small style="color:var(--ink-3)">' + A.esc(c.eventDate || '') + '</small></td>' +
+          '<td data-th="Payment">' + (c.paymentStatus === 'received'
+            ? '<span class="pill pill--received">Received</span>'
+            : '<span class="pill pill--pending">Pending</span>') + '</td>' +
+          '<td data-th="Status">' + (c.status === 'active'
+            ? '<span class="pill pill--active">Active</span>'
+            : c.status === 'suspended' ? '<span class="pill pill--suspended">Suspended</span>'
+            : c.status === 'archived' ? '<span class="pill pill--archived">Archived</span>'
+            : '<span class="pill pill--inactive">Inactive</span>') + '</td>' +
+          '<td data-th="Drive">' + (c.drive && c.drive.connected
+            ? '<span class="pill pill--active">Connected</span>'
+            : '<span class="pill pill--muted">Not connected</span>') + '</td>' +
+          '<td data-th="Photos">' + idxPill + '</td>' +
+          '<td data-th="Functions">' + fnsAll.filter(function (f) { return f.clientId === c.id; }).length + '</td>' +
+          '<td data-th="Created"><span class="mono">' + (c.createdAt ? String(c.createdAt).slice(0, 10) : '—') + '</span></td>' +
+          '<td class="cell-actions"><div class="row-actions">' +
+            '<a class="icon-btn" href="/admin/clients/client/?id=' + encodeURIComponent(c.id) + '" title="View · Manage">' + A.icon('eye') + '</a>' +
+            '<button class="icon-btn" data-copy="' + A.esc(c.code) + '" title="Copy access code">' + A.icon('copy') + '</button>' +
+            (c.status === 'suspended'
+              ? '<button class="icon-btn" data-activate="' + c.id + '" title="Activate">' + A.icon('check') + '</button>'
+              : '<button class="icon-btn" data-suspend="' + c.id + '" title="Suspend">' + A.icon('ban') + '</button>') +
+            (c.status !== 'archived'
+              ? '<button class="icon-btn" data-archive="' + c.id + '" title="Archive">' + A.icon('lock') + '</button>' : '') +
+          '</div></td>' +
+        '</tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  var jobsIndex = [];
+  function load() {
+    M.clients.list().then(function (clients) {
+      var list = clients;
+      if (query) {
+        var q = query.toLowerCase();
+        list = clients.filter(function (c) {
+          return (c.name || '').toLowerCase().indexOf(q) !== -1 ||
+                 (c.eventTitle || '').toLowerCase().indexOf(q) !== -1 ||
+                 (c.contact || '').toLowerCase().indexOf(q) !== -1 ||
+                 (c.code || '').toLowerCase().indexOf(q) !== -1;
+        });
+      }
+      list = list.filter(function (c) {
+        var p = c.permissions || {};
+        switch (clientFilter) {
+          case 'active': return c.status === 'active';
+          case 'inactive': return c.status !== 'active' && c.status !== 'suspended' && c.status !== 'archived';
+          case 'suspended': return c.status === 'suspended';
+          case 'archived': return c.status === 'archived';
+          case 'pay-pending': return c.paymentStatus !== 'received';
+          case 'pay-received': return c.paymentStatus === 'received';
+          case 'ai-on': return p.aiSearch !== false;
+          case 'ai-off': return p.aiSearch === false;
+          default: return true;
+        }
+      });
+      M.store.read('jobs_v1', []).forEach(function (j) {
+        var ex = jobsIndex.filter(function (x) { return x.clientId === j.clientId; })[0];
+        if (!ex || j.startedAt > ex.startedAt) jobsIndex = jobsIndex.filter(function (x) { return x.clientId !== j.clientId; }).concat([j]);
+      });
+      render(list);
+      bind(clients);
+    });
+  }
+
+  function bind(all) {
+    var wrap = A.qs('#clientTableWrap');
+    wrap.onclick = function (e) {
+      var cpy = e.target.closest('[data-copy]');
+      var sus = e.target.closest('[data-suspend]');
+      var act = e.target.closest('[data-activate]');
+      var arc = e.target.closest('[data-archive]');
+      var t = e.target.closest('[data-toggle]');
+      var d = e.target.closest('[data-del]');
+      if (sus || act) {
+        var sid = (sus || act).getAttribute(sus ? 'data-suspend' : 'data-activate');
+        var next2 = sus ? 'suspended' : 'active';
+        M.clients.update(sid, { status: next2 }).then(function () {
+          M.clients.logEvent(sid, 'permission', 'Client ' + (sus ? 'suspended' : 'activated') + ' from the clients list.');
+          A.toast(sus ? 'Client suspended — access is blocked until reactivated.' : 'Client activated.');
+          load();
+        });
+        return;
+      }
+      if (arc) {
+        var aid = arc.getAttribute('data-archive');
+        A.confirm({
+          title: 'Archive this client?',
+          message: 'Records are kept, but the client can no longer access their gallery. Nothing is deleted.',
+          confirmText: 'Archive', danger: false
+        }).then(function (yes) {
+          if (!yes) return;
+          M.clients.update(aid, { status: 'archived' }).then(function () {
+            M.clients.logEvent(aid, 'permission', 'Client archived — records kept, access closed.');
+            A.toast('Client archived.'); load();
+          });
+        });
+        return;
+      }
+      if (cpy) {
+        A.copy(cpy.getAttribute('data-copy')).then(function (ok) {
+          A.toast(ok ? 'Access code copied.' : 'Copy failed — please copy manually.', ok ? undefined : 'error');
+        });
+      }
+      if (t) {
+        var id = t.getAttribute('data-toggle');
+        var c = all.filter(function (x) { return x.id === id; })[0];
+        if (!c) return;
+        var next = c.status === 'active' ? 'disabled' : 'active';
+        M.clients.update(id, { status: next }).then(function () {
+          A.toast(next === 'active' ? 'Client enabled — their code works again.' : 'Client disabled — their code will not open a gallery.');
+          load();
+        });
+      }
+      if (d) {
+        var did = d.getAttribute('data-del');
+        var dc = all.filter(function (x) { return x.id === did; })[0];
+        A.confirm({
+          title: 'Delete ' + (dc ? dc.name + '?' : 'this client?'),
+          message: 'This removes the client and their access code permanently.',
+          confirmText: 'Delete', danger: true
+        }).then(function (yes) {
+          if (!yes) return;
+          M.clients.remove(did).then(function () { A.toast('Client deleted.'); load(); });
+        });
+      }
+    };
+  }
+
+  A.qs('#clientSearch').addEventListener('input', function () { query = this.value.trim(); load(); });
+  A.qsa('#clientChips .chip').forEach(function (ch) {
+    ch.addEventListener('click', function () {
+      A.qsa('#clientChips .chip').forEach(function (x) { x.classList.remove('is-active'); });
+      ch.classList.add('is-active');
+      clientFilter = ch.getAttribute('data-f');
+      load();
+    });
+  });
+  load();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Logs — Markipie Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+</head>
+<body class="admin-body">
+  <div id="adminShell" class="admin-shell">
+    <aside id="adminSidebar" class="admin-sidebar" aria-label="Admin navigation"></aside>
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+    <main class="admin-main">
+      <header id="adminTopbar" class="admin-topbar"></header>
+
+      <section class="admin-content">
+        <div class="page-head">
+          <div>
+            <h1>Activity Logs</h1>
+            <p class="page-sub">Real actions recorded by the platform. Secrets and credentials are never logged.</p>
+          </div>
+        </div>
+
+        <div class="filter-bar" role="group" aria-label="Activity filters">
+          <div class="chips" id="actChips">
+            <button class="chip is-active" data-cat="all" type="button">All</button>
+            <button class="chip" data-cat="clients" type="button">Clients</button>
+            <button class="chip" data-cat="functions" type="button">Functions</button>
+            <button class="chip" data-cat="drive" type="button">Drive</button>
+            <button class="chip" data-cat="ai" type="button">AI</button>
+            <button class="chip" data-cat="blogs" type="button">Blogs</button>
+            <button class="chip" data-cat="services" type="button">Services</button>
+            <button class="chip" data-cat="permissions" type="button">Permissions</button>
+            <button class="chip" data-cat="authentication" type="button">Authentication</button>
+          </div>
+          <div class="filter-fields">
+            <input id="actSearch" type="search" placeholder="Search activity…" aria-label="Search activity">
+            <input id="actFrom" type="date" aria-label="From date">
+            <input id="actTo" type="date" aria-label="To date">
+          </div>
+        </div>
+
+        <div class="card" id="actWrap" style="padding:0">
+          <div class="tbl-scroll">
+            <table class="adm" id="actTable">
+              <thead><tr>
+                <th data-th="Admin">Admin</th><th data-th="Action">Action</th>
+                <th data-th="Entity">Entity</th><th data-th="Date">Date / Time</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/assets/js/data.js"></script>
+  <script src="/admin/assets/admin-data.js"></script>
+  <script src="/admin/assets/admin.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    if (!Admin.requireAuth()) return;
+    var A = Admin, M = window.MarkipieData;
+    var cat = 'all';
+
+    var CAT_LABEL = {
+      code: 'Access Code', payment: 'Payment', permission: 'Permissions', indexing: 'AI Indexing',
+      drive: 'Drive', blog: 'Blog', service: 'Service', auth: 'Authentication',
+      client: 'Client', 'function': 'Function'
+    };
+    /* live admin/session identity for the log view — names only, never secrets */
+    function adminName() {
+      var s = M.auth && M.auth.session();
+      return (s && (s.user || s.email)) || 'Admin';
+    }
+
+    function esc(x) { return A.esc(String(x == null ? '' : x)); }
+
+    function row(e) {
+      var d = new Date(e.at);
+      var when = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) +
+        ' · ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      return '<tr>' +
+        '<td data-th="Admin"><b>' + esc(adminName()) + '</b></td>' +
+        '<td data-th="Action">' + esc(CAT_LABEL[e.type] || e.type) + '</td>' +
+        '<td data-th="Entity">' + esc(e.text || '') + '</td>' +
+        '<td data-th="Date"><span class="mono">' + esc(when) + '</span></td>' +
+        '</tr>';
+    }
+
+    function emptyRow() {
+      A.qs('#actWrap').innerHTML = '<div class="empty" style="padding:34px;text-align:center">' +
+        '<p style="color:var(--ink-3)">No activity recorded yet.</p></div>';
+    }
+
+    var debounce = null;
+    function load() {
+      M.activity.list({
+        category: cat,
+        q: A.qs('#actSearch').value.trim(),
+        from: A.qs('#actFrom').value || null,
+        to: A.qs('#actTo').value || null
+      }).then(function (evs) {
+        if (!evs.length) { emptyRow(); return; }
+        A.qs('#actWrap').innerHTML = '<div class="tbl-scroll"><table class="adm" id="actTable"><thead><tr>' +
+          '<th data-th="Admin">Admin</th><th data-th="Action">Action</th>' +
+          '<th data-th="Entity">Entity</th><th data-th="Date">Date / Time</th>' +
+          '</tr></thead><tbody>' + evs.map(row).join('') + '</tbody></table></div>';
+      });
+    }
+
+    A.qsa('#actChips .chip').forEach(function (c) {
+      c.addEventListener('click', function () {
+        A.qsa('#actChips .chip').forEach(function (x) { x.classList.remove('is-active'); });
+        c.classList.add('is-active');
+        cat = c.getAttribute('data-cat');
+        load();
+      });
+    });
+    A.qs('#actSearch').addEventListener('input', function () {
+      clearTimeout(debounce); debounce = setTimeout(load, 250);
+    });
+    A.qs('#actFrom').addEventListener('change', load);
+    A.qs('#actTo').addEventListener('change', load);
+
+    load();
+  })();
+  </script>
+</body>
+</html>

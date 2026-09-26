@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings — Markipie Admin</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body class="admin-body">
+<div id="adminSidebar" class="admin-sidebar"></div>
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+<div class="admin-shell">
+  <header id="adminTopbar" class="admin-topbar"></header>
+  <main class="admin-main adm-reveal" style="max-width:720px">
+
+    <div class="page-head">
+      <div>
+        <h1>Settings</h1>
+        <p class="sub">Studio details — used across the site once the backend is connected.</p>
+      </div>
+    </div>
+
+    <div class="note-banner">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span>Settings are stored with the local data in this phase and will sync to the server when the backend connects.</span>
+    </div>
+
+    <form class="card card-pad" id="settingsForm">
+      <div class="form-grid form-grid--2">
+        <div class="field">
+          <label for="sName">Studio Name</label>
+          <input id="sName" maxlength="60">
+        </div>
+        <div class="field">
+          <label for="sPhone">Phone</label>
+          <input id="sPhone" type="tel" placeholder="Studio number">
+        </div>
+        <div class="field">
+          <label for="sWhatsapp">WhatsApp Number</label>
+          <input id="sWhatsapp" type="tel" placeholder="Used by the floating WhatsApp button">
+        </div>
+        <div class="field">
+          <label for="sEmail">Email</label>
+          <input id="sEmail" type="email" placeholder="Studio inbox">
+        </div>
+        <div class="field">
+          <label for="sInsta">Instagram Handle</label>
+          <input id="sInsta" placeholder="@studio">
+        </div>
+        <div class="field">
+          <label for="sAddress">Studio Address</label>
+          <input id="sAddress" placeholder="Studio address">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn--primary" type="submit" id="saveSettings">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Save Settings
+        </button>
+      </div>
+    </form>
+
+    <!-- ============ ADMIN PROFILE + SECURITY ============ -->
+    <div class="form-grid form-grid--2" style="margin-top:18px">
+      <form class="card card-pad" id="profileForm">
+        <h2 style="font-size:15px;margin-bottom:12px">Admin Profile</h2>
+        <div class="field">
+          <label for="pDisplay">Display Name</label>
+          <input id="pDisplay" maxlength="60" placeholder="Shown in the sidebar and activity logs">
+        </div>
+        <div class="form-actions"><button class="btn btn--primary btn--sm" type="submit">Save Profile</button></div>
+      </form>
+
+      <div class="card card-pad">
+        <h2 style="font-size:15px;margin-bottom:12px">Security</h2>
+        <p style="font-size:13px;color:var(--ink-3);margin-bottom:8px">
+          Session: <b id="secMode">checking…</b><br>
+          Signed in as: <b id="secUser">—</b><br>
+          Since: <b id="secSince">—</b>
+        </p>
+        <p class="hint" style="margin-bottom:12px">Authentication runs on Supabase Auth in production; the local development session stays on this device only and never stores plaintext credentials.</p>
+        <button class="btn btn--danger btn--sm" id="secLogout" type="button">Log out</button>
+      </div>
+    </div>
+
+    <!-- ============ AI SETTINGS (safe values only) ============ -->
+    <div class="card card-pad" style="margin-top:18px">
+      <h2 style="font-size:15px;margin-bottom:6px">AI Face Search Settings</h2>
+      <p class="hint" style="margin-bottom:14px">Safe tuning only. The embedding dimension is fixed by the face model (128) and can never be changed here — changing it would break vector compatibility.</p>
+      <div class="form-grid form-grid--3" id="aiCfg">
+        <div class="field">
+          <label for="aiThreshold">Face Match Threshold <small>(0.30–0.80)</small></label>
+          <input id="aiThreshold" type="number" min="0.3" max="0.8" step="0.05">
+          <p class="hint">Lower = more (looser) matches. Default 0.5.</p>
+        </div>
+        <div class="field">
+          <label for="aiCount">Maximum Results <small>(10–100)</small></label>
+          <input id="aiCount" type="number" min="10" max="100" step="5">
+          <p class="hint">Upper limit of photos shown per search. Default 60.</p>
+        </div>
+        <div class="field">
+          <label for="aiBatch">Indexing Batch Size <small>(10–50)</small></label>
+          <input id="aiBatch" type="number" min="10" max="50" step="5">
+          <p class="hint">Photos per save point. Default 10.</p>
+        </div>
+      </div>
+      <div class="row-actions" style="gap:10px">
+        <button class="btn btn--primary btn--sm" id="aiSave" type="button">Save AI Settings</button>
+        <button class="btn btn--ghost btn--sm" id="aiReset" type="button">Reset to Defaults</button>
+      </div>
+      <p class="hint" style="margin-top:10px">Embedding dimension: <b>128 (read-only, model-defined)</b> · Production deployments tune the same values via the FACE_MATCH_THRESHOLD / FACE_MATCH_COUNT secrets.</p>
+    </div>
+
+  </main>
+</div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/admin/assets/admin-data.js"></script>
+<script src="/admin/assets/admin.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (!Admin.requireAuth()) return;
+  var A = Admin, M = window.MarkipieData;
+
+  M.settings.get().then(function (s) {
+    A.qs('#sName').value = s.studioName || '';
+    A.qs('#sPhone').value = s.phone || '';
+    A.qs('#sWhatsapp').value = s.whatsapp || '';
+    A.qs('#sEmail').value = s.email || '';
+    A.qs('#sInsta').value = s.instagram || '';
+    A.qs('#sAddress').value = s.address || '';
+  });
+
+  /* ---------- profile + security + AI settings (Phase 13) ---------- */
+  var sess = M.auth && M.auth.session();
+  A.qs('#secMode').textContent = (window.MKServices && MKServices.auth && MKServices.auth.mode() === 'supabase') ? 'Supabase Auth (production)' : 'Local development session';
+  A.qs('#secUser').textContent = (sess && (sess.user || sess.email)) || 'Admin';
+  A.qs('#secSince').textContent = sess && sess.t ? new Date(sess.t).toLocaleString('en-IN') : '—';
+  A.qs('#pDisplay').value = (sess && sess.user) || '';
+  A.qs('#profileForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = A.qs('#pDisplay').value.trim() || 'Admin';
+    if (sess) sess.user = v;
+    try { localStorage.setItem('mk_admin_session', JSON.stringify(sess)); } catch (err) {}
+    var pn = document.querySelector('#adminProfileName');
+    if (pn) pn.textContent = v;
+    A.toast('Profile saved.');
+  });
+  A.qs('#secLogout').addEventListener('click', function () { Admin.logout(); });
+
+  var AI_KEY = 'mk_admin_ai_cfg';
+  function aiCfg() {
+    try { return JSON.parse(localStorage.getItem(AI_KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function aiFill() {
+    var c = aiCfg();
+    A.qs('#aiThreshold').value = c.threshold != null ? c.threshold : 0.5;
+    A.qs('#aiCount').value = c.count != null ? c.count : 60;
+    A.qs('#aiBatch').value = c.batch != null ? c.batch : 10;
+  }
+  aiFill();
+  A.qs('#aiSave').addEventListener('click', function () {
+    var clamp = function (v, lo, hi, dflt) { v = Number(v); return isNaN(v) ? dflt : Math.min(hi, Math.max(lo, v)); };
+    var cfg = {
+      threshold: clamp(A.qs('#aiThreshold').value, 0.3, 0.8, 0.5),
+      count: Math.round(clamp(A.qs('#aiCount').value, 10, 100, 60)),
+      batch: Math.round(clamp(A.qs('#aiBatch').value, 10, 50, 10))
+    };
+    localStorage.setItem(AI_KEY, JSON.stringify(cfg));
+    applyAi(cfg);
+    A.toast('AI settings saved on this device.');
+  });
+  A.qs('#aiReset').addEventListener('click', function () {
+    localStorage.removeItem(AI_KEY);
+    aiFill(); applyAi({ threshold: 0.5, count: 60, batch: 10 });
+    A.toast('AI settings reset to defaults.');
+  });
+  function applyAi(c) {
+    /* safe, supported overrides only — engine clamps again defensively */
+    if (window.MarkipieFaceConfig) {
+      MarkipieFaceConfig.faceMatchThreshold = c.threshold;
+      MarkipieFaceConfig.faceMatchCount = c.count;
+    }
+    if (window.MarkipieIndex && MarkipieIndex.config) MarkipieIndex.config.batchSize = c.batch;
+  }
+  applyAi(aiCfg());
+
+  A.qs('#settingsForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    M.settings.save({
+      studioName: A.qs('#sName').value.trim(),
+      phone: A.qs('#sPhone').value.trim(),
+      whatsapp: A.qs('#sWhatsapp').value.trim(),
+      email: A.qs('#sEmail').value.trim(),
+      instagram: A.qs('#sInsta').value.trim(),
+      address: A.qs('#sAddress').value.trim()
+    }).then(function () { A.toast('Settings saved.'); });
+  });
+})();
+</script>
+</body>
+</html>

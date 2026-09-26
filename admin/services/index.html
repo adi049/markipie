@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services — Markipie Admin</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body class="admin-body">
+<div id="adminSidebar" class="admin-sidebar"></div>
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+<div class="admin-shell">
+  <header id="adminTopbar" class="admin-topbar"></header>
+  <main class="admin-main adm-reveal">
+
+    <div class="page-head">
+      <div>
+        <h1>Services</h1>
+        <p class="sub">Package rate card — one source of truth for the public Services page, home preview and comparison.</p>
+      </div>
+      <div class="head-actions">
+        <button class="btn btn--primary" id="addPkgBtn" type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add Package
+        </button>
+      </div>
+    </div>
+
+    <div class="note-banner">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span>Prices and inclusions render verbatim on the public site — no invented claims. Unpublished packages are hidden from visitors instantly.</span>
+    </div>
+
+    <div class="card" id="pkgListWrap" style="overflow:visible"></div>
+
+  </main>
+</div>
+
+<!-- ============ PACKAGE MODAL ============ -->
+<div class="modal-backdrop" id="pkgModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pkgModalTitle">
+    <h3 id="pkgModalTitle">Add Package</h3>
+    <p class="modal-sub">Appears on the public Services page immediately when published.</p>
+
+    <div class="form-grid form-grid--2">
+      <div class="field">
+        <label for="pTitle">Package Name</label>
+        <input id="pTitle" placeholder="e.g. Single-Side Wedding Package" maxlength="80" required>
+        <span class="err">Please enter the package name.</span>
+      </div>
+      <div class="field">
+        <label for="pCategory">Category</label>
+        <select id="pCategory">
+          <option value="wedding">Wedding</option>
+          <option value="engagement">Engagement</option>
+          <option value="prewedding">Pre-Wedding</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="pCatLabel">Category Label</label>
+        <input id="pCatLabel" placeholder="e.g. Single-Side Photography" maxlength="60">
+      </div>
+      <div class="field">
+        <label for="pPrice">Price (₹)</label>
+        <input id="pPrice" type="number" min="0" step="1000" placeholder="65000">
+        <span class="err">Please enter the price.</span>
+      </div>
+      <div class="field field--full">
+        <label for="pNote">Short Description</label>
+        <input id="pNote" placeholder="e.g. Paid Location — Delhi NCR" maxlength="120">
+      </div>
+      <div class="field field--full">
+        <label for="pCoverage">Event Coverage</label>
+        <textarea id="pCoverage" rows="4" placeholder="Event Name :: 1 Photographer; 1 Videographer&#10;Wedding :: 1 Photographer; 1 Candid"></textarea>
+        <p class="hint">One event per line — <b>Event Name :: item; item; item</b></p>
+      </div>
+      <div class="field field--full">
+        <label for="pDeliverables">Deliverables</label>
+        <textarea id="pDeliverables" rows="4" placeholder="Unlimited Raw Photos&#10;1 Album — 50 Sheet — 12x36 Glossy"></textarea>
+        <p class="hint">One per line.</p>
+      </div>
+      <div class="field field--full">
+        <label for="pComp">Complimentary</label>
+        <textarea id="pComp" rows="3" placeholder="16x24 Big Size Frame&#10;AI Face Recognition"></textarea>
+        <p class="hint">One per line.</p>
+      </div>
+      <div class="field field--full">
+        <div class="perm-row"><span class="pr-label"><b>Published</b><small>Visible on the public Services page</small></span>
+          <button class="switch is-on" id="pPublished" role="switch" aria-checked="true" aria-label="Published"></button></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn--ghost" data-pkg-cancel type="button">Cancel</button>
+      <button class="btn btn--primary" id="pkgSaveBtn" type="button">Save Package</button>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/data.js"></script>
+<script src="/admin/assets/admin-data.js"></script>
+<script src="/admin/assets/admin.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (!Admin.requireAuth()) return;
+  var A = Admin, M = window.MarkipieData;
+
+  var editingId = null;
+
+  function catPill(cat) {
+    var map = { wedding: ['Wedding', 'pill--blue'], engagement: ['Engagement', 'pill--received'], prewedding: ['Pre-Wedding', 'pill--active'] };
+    var d = map[cat] || [cat, 'pill--muted'];
+    return '<span class="pill ' + d[1] + '">' + d[0] + '</span>';
+  }
+
+  function load() {
+    M.packages.list({ includeUnpublished: true }).then(function (items) {
+      var wrap = A.qs('#pkgListWrap');
+      if (!items.length) {
+        wrap.innerHTML = '<div style="text-align:center;padding:36px 12px">' +
+          '<p style="color:var(--ink-3);margin-bottom:14px">No packages yet.</p>' +
+          '<button class="btn btn--primary" id="emptyAdd">Add your first package</button></div>';
+        var ea = A.qs('#emptyAdd');
+        if (ea) ea.addEventListener('click', function () { openModal(null); });
+        return;
+      }
+      wrap.innerHTML = '<div class="fn-rows">' + items.map(function (p) {
+        return '<div class="fn-row">' +
+          '<span class="grow"><b>' + A.esc(p.title) + '</b>' +
+            '<small>' + A.esc(p.categoryLabel || p.note || '\u2014') + '</small></span>' +
+          '<span class="pills">' + catPill(p.category) +
+            (p.published !== false ? '<span class="pill pill--active">Published</span>' : '<span class="pill pill--muted">Unpublished</span>') + '</span>' +
+          '<b class="code-mono" style="white-space:nowrap">' + A.esc(p.priceDisplay) + '</b>' +
+          '<span class="row-actions">' +
+            '<button class="icon-btn" data-edit="' + p.id + '" title="Edit">' + A.icon('edit') + '</button>' +
+            '<button class="icon-btn" data-pub="' + p.id + '" title="' + (p.published !== false ? 'Unpublish' : 'Publish') + '">' + A.icon(p.published !== false ? 'eyeOff' : 'eye') + '</button>' +
+            '<button class="icon-btn icon-btn--danger" data-del="' + p.id + '" title="Delete">' + A.icon('trash') + '</button>' +
+          '</span>' +
+        '</div>';
+      }).join('') + '</div>';
+
+      A.qsa('[data-edit]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          M.packages.get(b.getAttribute('data-edit')).then(openModal);
+        });
+      });
+      A.qsa('[data-pub]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var pid = b.getAttribute('data-pub');
+          M.packages.get(pid).then(function (p) {
+            if (!p) return;
+            var val = p.published === false;
+            M.packages.setPublished(pid, val).then(function () {
+              A.toast(val ? 'Package published — live on the Services page.' : 'Package unpublished — hidden from visitors.');
+              load();
+            });
+          });
+        });
+      });
+      A.qsa('[data-del]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          A.confirm({ title: 'Delete this package?', message: 'This removes it from the public rate card. This cannot be undone.', confirmText: 'Delete', danger: true })
+            .then(function (yes) {
+              if (!yes) return;
+              M.packages.remove(b.getAttribute('data-del')).then(function () { A.toast('Package deleted.'); load(); });
+            });
+        });
+      });
+    });
+  }
+
+  /* ---------- modal ---------- */
+  function parseCoverage(txt) {
+    return (txt || '').split('\n').map(function (line) {
+      line = line.trim(); if (!line) return null;
+      var parts = line.split('::');
+      if (parts.length < 2) return { name: parts[0], items: [] };
+      return { name: parts[0].trim(), items: parts[1].split(';').map(function (x) { return x.trim(); }).filter(Boolean) };
+    }).filter(Boolean);
+  }
+  function lines(txt) {
+    return (txt || '').split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+  }
+  function openModal(p) {
+    editingId = p ? p.id : null;
+    A.qs('#pkgModalTitle').textContent = p ? 'Edit Package' : 'Add Package';
+    A.qs('#pTitle').value = p ? p.title : '';
+    A.qs('#pCategory').value = p ? p.category : 'wedding';
+    A.qs('#pCatLabel').value = p ? (p.categoryLabel || '') : '';
+    A.qs('#pPrice').value = p ? String(p.price || '') : '';
+    A.qs('#pNote').value = p ? (p.note || '') : '';
+    A.qs('#pCoverage').value = p ? (p.sections || []).map(function (sx) { return sx.name + ' :: ' + (sx.items || []).join('; '); }).join('\n') : '';
+    A.qs('#pDeliverables').value = p ? (p.deliverables || []).join('\n') : '';
+    A.qs('#pComp').value = p ? (p.complimentary || []).join('\n') : '';
+    var pub = !p || p.published !== false;
+    A.qs('#pPublished').classList.toggle('is-on', pub);
+    A.qs('#pPublished').setAttribute('aria-checked', pub);
+    A.qs('#pTitle').closest('.field').classList.remove('has-err');
+    A.qs('#pPrice').closest('.field').classList.remove('has-err');
+    A.qs('#pkgModal').classList.add('is-open');
+    setTimeout(function () { A.qs('#pTitle').focus(); }, 250);
+  }
+  function closeModal() { A.qs('#pkgModal').classList.remove('is-open'); }
+
+  A.qs('#addPkgBtn').addEventListener('click', function () { openModal(null); });
+  A.qs('#pkgModal').addEventListener('click', function (e) {
+    if (e.target === this || e.target.closest('[data-pkg-cancel]')) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && A.qs('#pkgModal').classList.contains('is-open')) closeModal();
+  });
+  A.qs('#pPublished').addEventListener('click', function () {
+    var on = !this.classList.contains('is-on');
+    this.classList.toggle('is-on', on);
+    this.setAttribute('aria-checked', on);
+  });
+
+  A.qs('#pkgSaveBtn').addEventListener('click', function () {
+    var title = A.qs('#pTitle').value.trim();
+    var price = A.qs('#pPrice').value;
+    var ok = true;
+    if (!title) { A.qs('#pTitle').closest('.field').classList.add('has-err'); ok = false; }
+    if (price === '' || Number(price) < 0) { A.qs('#pPrice').closest('.field').classList.add('has-err'); ok = false; }
+    if (!ok) return;
+    var data = {
+      title: title,
+      category: A.qs('#pCategory').value,
+      categoryLabel: A.qs('#pCatLabel').value.trim(),
+      price: Number(price),
+      note: A.qs('#pNote').value.trim(),
+      sections: parseCoverage(A.qs('#pCoverage').value),
+      deliverables: lines(A.qs('#pDeliverables').value),
+      complimentary: lines(A.qs('#pComp').value),
+      published: A.qs('#pPublished').classList.contains('is-on')
+    };
+    var btn = A.qs('#pkgSaveBtn');
+    btn.disabled = true;
+    var done = function () { btn.disabled = false; closeModal(); load(); };
+    if (editingId) {
+      M.packages.update(editingId, data).then(function () { A.toast('Package updated.'); done(); });
+    } else {
+      M.packages.create(data).then(function () { A.toast('Package added to the rate card.'); done(); });
+    }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
