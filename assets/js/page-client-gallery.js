@@ -48,13 +48,20 @@
      (Part 23: never thousands of live DOM nodes); data stays intact */
   var MAX_TILES = 300;
 
+  function readValidatedPayload() {
+    try { return JSON.parse(sessionStorage.getItem('mk_client_payload') || 'null'); } catch (e) { return null; }
+  }
+  var validatedPayload = readValidatedPayload();
+
   /* ---------------- session gate (Parts 26–27) ----------------
-     The decision is made WITHOUT rendering any media: resolve the
-     function's client, require a valid session for that client. */
+     Prefer local metadata when present; use the server-validated session
+     payload on a client's own device when the local demo store is empty. */
   D.functions.get(fid).then(function (f) {
+    if (!f && validatedPayload) f = (validatedPayload.functions || []).filter(function (item) { return item.id === fid; })[0] || null;
     if (!f) { showGuard(true); return; }
     fn = f;
     return D.clients.getPublic(f.clientId).then(function (c) {
+      if (!c && validatedPayload && validatedPayload.client && validatedPayload.client.id === f.clientId) c = validatedPayload.client;
       if (!c) { showGuard(true); return; }
       client = c;
       return GS.validateSession(c.id).then(function (okSession) {
@@ -74,6 +81,7 @@
   }
 
   function boot() {
+    if (GS) GS.activate();
     document.title = fn.name + ' — ' + (client.eventTitle || client.name);
     MK.qs('#galTitle').textContent = fn.name;
     MK.qs('#galEvent').textContent = client.eventTitle || client.name;
@@ -101,7 +109,8 @@
 
   function loadClientFunctions() {
     return D.functions.forClient(client.id).then(function (fns) {
-      /* the public layer already returns active functions only */
+      /* The validation response is the authoritative fallback on a fresh device. */
+      if ((!fns || !fns.length) && validatedPayload && validatedPayload.client && validatedPayload.client.id === client.id) fns = validatedPayload.functions || [];
       clientFns = fns || [];
     }).catch(function () { clientFns = []; });
   }

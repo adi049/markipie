@@ -118,8 +118,32 @@
         }).then(function (res) { return res.json(); }).then(function (res) {
           /* normalise to the same minimal shape the dev fallback returns */
           if (res && res.ok && res.client) {
-            try { sessionStorage.setItem('mk_client_code', code); } catch (e) {}
-            return { ok: true, clientId: res.client.id, eventTitle: res.client.eventTitle, functions: res.functions || [] };
+            var safeClient = {
+              id: res.client.id,
+              name: res.client.clientName || res.client.eventTitle || 'Client',
+              eventTitle: res.client.eventTitle || res.client.clientName || 'Private Collection',
+              eventType: '',
+              eventDate: res.client.eventDate || '',
+              accessOpen: true,
+              permissions: res.client.permissions || {}
+            };
+            var safeFunctions = (res.functions || []).map(function (f) {
+              return {
+                id: f.id, clientId: safeClient.id,
+                name: f.function_name || f.name || 'Gallery',
+                eventDate: f.function_date || f.eventDate || '',
+                cover: f.cover_image_url || f.cover || null,
+                photoCount: Number(f.photo_count || f.photoCount || 0),
+                videoCount: Number(f.video_count || f.videoCount || 0),
+                status: 'active',
+                aiFaceSearch: safeClient.permissions.aiSearch !== false
+              };
+            });
+            try {
+              sessionStorage.setItem('mk_client_code', code);
+              sessionStorage.setItem('mk_client_payload', JSON.stringify({ client: safeClient, functions: safeFunctions }));
+            } catch (e) {}
+            return { ok: true, clientId: safeClient.id, eventTitle: safeClient.eventTitle, functions: safeFunctions };
           }
           return { ok: false };
         }).catch(function () { return { ok: false }; });
