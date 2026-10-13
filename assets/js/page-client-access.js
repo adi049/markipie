@@ -10,6 +10,9 @@
   var input = MK.qs('#clientCode');
   var err = MK.qs('#accessError');
   var btn = MK.qs('#accessBtn');
+  /* QR links prefill the code but still require an explicit submit. */
+  var presetCode = new URLSearchParams(location.search).get('code');
+  if (presetCode) input.value = presetCode.trim().toUpperCase();
 
   input.addEventListener('input', function () {
     err.classList.remove('is-visible');
