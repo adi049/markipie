@@ -71,6 +71,15 @@
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
           <a class="btn btn--sm btn--soft" id="viewGalleryBtn" href="#" target="_blank" rel="noopener">Open Client Dashboard</a>
         </div>
+
+        <div class="card" style="margin-top:16px;padding:16px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <div id="clientAccessQr" aria-label="Client access QR code" style="width:180px;height:180px;background:#fff;padding:8px;border:1px solid var(--line-2);border-radius:10px;display:grid;place-items:center"></div>
+          <div style="flex:1;min-width:220px">
+            <h2 style="font-size:15px;margin-bottom:6px">Client Access QR Code</h2>
+            <p class="hint" style="margin:0 0 12px">Scan to open the client access page with this client's code prefilled. Share this QR only with the intended client.</p>
+            <button class="btn btn--sm btn--soft" id="printClientQrBtn" type="button">Print QR Code</button>
+          </div>
+        </div>
       </div>
 
       <!-- ============ PERMISSIONS ============ -->
@@ -314,6 +323,7 @@
 <script src="/assets/js/services/driveService.js"></script>
 <script src="/admin/assets/admin-data.js"></script>
 <script src="/admin/assets/admin.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 (function () {
   'use strict';
@@ -358,9 +368,35 @@
     initIndexing();
   });
 
+  /* ================= client access QR ================= */
+  function renderClientQr() {
+    var target = A.qs('#clientAccessQr');
+    if (!target || !client) return;
+    target.innerHTML = '';
+    if (typeof QRCode !== 'function') {
+      target.textContent = 'QR library unavailable';
+      return;
+    }
+    var url = location.origin + '/client-access/?code=' + encodeURIComponent(client.code || '');
+    new QRCode(target, { text: url, width: 164, height: 164, correctLevel: QRCode.CorrectLevel.M });
+  }
+  A.qs('#printClientQrBtn').addEventListener('click', function () {
+    var target = A.qs('#clientAccessQr');
+    if (!target || !target.querySelector('canvas, img')) return;
+    var w = window.open('', '_blank', 'width=420,height=520');
+    if (!w) { A.toast('Allow pop-ups to print the QR code.', 'error'); return; }
+    var img = target.querySelector('img');
+    var src = img ? img.src : target.querySelector('canvas').toDataURL('image/png');
+    w.document.write('<!doctype html><html><head><title>Client Access QR</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:32px}img{width:220px;height:220px}p{overflow-wrap:anywhere}</style></head><body><h2>Markipie Client Access</h2><img src="' + src + '"><p>Client: ' + A.esc(client.name) + '</p><p>Access code: ' + A.esc(client.code) + '</p></body></html>');
+    w.document.close();
+    w.focus();
+    w.print();
+  });
+
   /* ================= access / payment / status ================= */
   function renderAccess() {
     A.qs('#detailCode').textContent = client.code;
+    renderClientQr();
     A.qs('#pillPayment').innerHTML = client.paymentStatus === 'received'
       ? '<span class="pill pill--received">✓ Payment Confirmed</span>'
       : '<span class="pill pill--pending">Payment Pending</span>';
