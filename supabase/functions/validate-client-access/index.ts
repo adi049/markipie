@@ -28,20 +28,21 @@ Deno.serve(async (req) => {
     const code = String(access_code ?? '').trim();
     if (!code) return new Response(JSON.stringify({ ok: false }), { status: 200, headers: { ...cors, 'Content-Type': 'application/json' } });
 
-    // Phase 13 hardening — brute-force throttle (8 attempts/min/IP).
-    // Neutral 429; the UI shows the same message as an invalid code.
-    const limited = await rateLimit(admin, req, 'validate', 8, 60);
-    if (limited) {
-      const b = await limited.text();
-      return new Response(b, { status: limited.status, headers: { ...cors, 'Content-Type': 'application/json' } });
-    }
-
     // Service role — server-side only. Never exposed to any client.
     const admin = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
       { auth: { persistSession: false } }
     );
+
+    // Phase 13 hardening — brute-force throttle (8 attempts/min/IP).
+    // The admin client must exist before rateLimit uses it.
+    // Neutral 429; the UI shows the same message as an invalid code.
+    const limited = await rateLimit(admin, req, 'validate', 8, 60);
+    if (limited) {
+      const b = await limited.text();
+      return new Response(b, { status: limited.status, headers: { ...cors, 'Content-Type': 'application/json' } });
+    }
 
     // Single-code lookup by the submitted code — never a bulk client query.
     const { data: client, error } = await admin
