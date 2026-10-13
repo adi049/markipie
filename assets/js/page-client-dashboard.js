@@ -13,8 +13,15 @@
 
   if (!id) { guard.hidden = false; return; }
 
+  function readValidatedPayload() {
+    try { return JSON.parse(sessionStorage.getItem('mk_client_payload') || 'null'); } catch (e) { return null; }
+  }
+  var validatedPayload = readValidatedPayload();
+
   D.clients.getPublic(id).then(function (c) {
+    if (!c && validatedPayload && validatedPayload.client && validatedPayload.client.id === id) c = validatedPayload.client;
     if (!c || !c.accessOpen) { guard.hidden = false; return; }
+    if (window.MKGallery) window.MKGallery.activate();
 
     document.title = (c.eventTitle || c.name) + ' — Private Collection';
 
@@ -44,6 +51,8 @@
     function shadeFor(name) { return 'ph-' + (1 + (String(name).length % 6)); }
 
     D.functions.forClient(c.id).then(function (fns) {
+      if ((!fns || !fns.length) && validatedPayload && validatedPayload.client && validatedPayload.client.id === c.id) fns = validatedPayload.functions || [];
+      fns = fns || [];
       if (!fns.length) {
         grid.innerHTML = '<div class="card" style="grid-column:1/-1;padding:36px 22px;text-align:center">' +
           '<p style="font-weight:700;font-size:16px">Your events are being prepared</p>' +
